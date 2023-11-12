@@ -1,0 +1,1 @@
+<li><%= item.name %> <%= item.tag_list.any? ? "[#{item.tag_list}]" : '' %> <%= link_to "X", item_path(item), data: { turbo_method: :delete } %></li>
