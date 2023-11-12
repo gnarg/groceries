@@ -1,6 +1,7 @@
 class ItemsController < ApplicationController
   def index
     @items = Item.all
+    @item = Item.new
   end
 
   def new
@@ -17,6 +18,13 @@ class ItemsController < ApplicationController
     end
   end
 
+  def update
+    @item = Item.find(params[:id])
+    @item.update(item_params)
+
+    render json: { message: "Success" }
+  end
+
   def destroy
     @item = Item.find(params[:id])
     @item.destroy
@@ -25,6 +33,6 @@ class ItemsController < ApplicationController
 
   private
   def item_params
-    params.permit(:name, :tag_list)
+    params.require(:item).permit(:name, :purchased, :tag_list)
   end
 end

@@ -1,0 +1,5 @@
+<%= form_with model: item, url: '/items' do |form| %>
+  <div>Name: <%= form.text_field :name %></div>
+  <div>Tags: <%= form.text_field :tag_list %></div>
+  <%= form.submit %>
+<% end %>
