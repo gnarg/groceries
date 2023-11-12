@@ -1,0 +1,12 @@
+---
+name: groceries
+services:
+  image: groceries:latest
+  expose:
+    - 3000
+  volumes:
+    - /data/groceries/storage:/rails/storage
+  environment:
+    VIRTUAL_HOST: groceries.guymon.family
+    VIRTAUL_PORT: 3000
+    LETSENCRYPT_HOST: groceries.guymon.family
