@@ -1,12 +1,16 @@
 <h1>Items</h1>
 
-<ul data-controller="items">
-  <%= render @items.select{ |item| not item.purchased } %>
-</ul>
+<turbo-frame id="unpurchased">
+  <ul data-controller="items">
+    <%= render @items.select{ |item| not item.purchased } %>
+  </ul>
 
-<%= render 'form', item: @item %>
+  <%= render 'form', item: @item %>
+</turbo-frame>
 
-<h3>Purchased (<%= @items.select{ |item| item.purchased }.count %>)</h3>
-<ul data-controller="items">
-  <%= render @items.select{ |item| item.purchased } %>
-</ul>
+<turbo-frame id="purchased">
+  <h3>Purchased (<%= @items.select{ |item| item.purchased }.count %>)</h3>
+  <ul data-controller="items">
+    <%= render @items.select{ |item| item.purchased } %>
+  </ul>
+</turbo-frame>

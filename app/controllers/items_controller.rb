@@ -12,7 +12,7 @@ class ItemsController < ApplicationController
     @item = Item.new(item_params)
 
     if @item.save
-      redirect_to '/'
+      redirect_to root_url
     else
       render :new, status: :unprocessable_entity
     end
@@ -20,15 +20,18 @@ class ItemsController < ApplicationController
 
   def update
     @item = Item.find(params[:id])
-    @item.update(item_params)
 
-    render json: { message: "Success" }
+    if @item.update(item_params)
+      render json: @item 
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def destroy
     @item = Item.find(params[:id])
     @item.destroy
-    redirect_to '/'
+    redirect_to root_url
   end
 
   private
