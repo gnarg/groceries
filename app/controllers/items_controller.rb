@@ -2,6 +2,7 @@ class ItemsController < ApplicationController
   def index
     @items = Item.all
     @item = Item.new
+    @tags = Item.tag_counts
   end
 
   def new
@@ -11,20 +12,32 @@ class ItemsController < ApplicationController
   def create
     @item = Item.new(item_params)
 
-    if @item.save
-      redirect_to root_url
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @item.save
+        format.turbo_stream
+        format.html { redirect_to item_url(@item), notice: "Todo was successfully created." }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
+  end
+
+  def edit
+    @item = Item.find(params[:id])
   end
 
   def update
     @item = Item.find(params[:id])
 
-    if @item.update(item_params)
-      render json: @item 
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @item.update(item_params)
+        format.turbo_stream
+        format.html { redirect_to item_url(@item), notice: "Todo was successfully updated." }
+        format.json { render :show, status: :ok, location: @item }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @item.errors, status: :unprocessable_entity }
+      end
     end
   end
 

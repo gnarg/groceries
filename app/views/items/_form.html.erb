@@ -1,5 +1,7 @@
-<%= form_with model: item, url: '/items' do |form| %>
-  <div>Name: <%= form.text_field :name %></div>
-  <div>Tags: <%= form.text_field :tag_list %></div>
-  <%= form.submit %>
+<%= form_with model: item, id: "#{dom_id(item)}_form" do |form| %>
+  <div class="flex items-stretch flex-grow">
+    <%= form.label :name, class: "sr-only" %> <%= form.text_field :name, class: "block w-full rounded-none rounded-l-md sm:text-sm border-gray-300", placeholder: "Add an item..." %>
+    <%= form.label :tag_list, class: "sr-only" %> <%= form.text_field :tag_list, class: "block w-full rounded-none rounded-l-md sm:text-sm border-gray-300", placeholder: "Tags..." %> 
+    <%= form.submit  class: "-ml-px relative px-4 py-2 border border-blue-600 text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700" %>
+  </div>
 <% end %>

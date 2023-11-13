@@ -1,8 +1,6 @@
-<li>
-  <%= form_with model: item do |form| %>
-    <%= form.check_box :purchased,
-      data: { item: { id: item.id }, action: "items#toggle" } %>
-    <%= item.name %> <%= item.tag_list.any? ? "[#{item.tag_list}]" : '' %>
+<li id="<%= "#{dom_id(item)}_container" %>" class="py-2 px-4 border-b border-gray-300">
+  <%= turbo_frame_tag dom_id(item) do %>
+    <%= link_to item.name, edit_item_path(item) %> <%= item.tag_list.any? ? "[#{item.tag_list}]" : '' %>
     <%= link_to "X", item_path(item), data: { turbo_method: :delete } %>
   <% end %>
 </li>

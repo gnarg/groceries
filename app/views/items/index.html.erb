@@ -1,16 +1,15 @@
-<h1>Items</h1>
+<div class="mx-auto w-4/5">
 
-<turbo-frame id="unpurchased">
-  <ul data-controller="items">
-    <%= render @items.select{ |item| not item.purchased } %>
+  <h2 class="text-2xl text-gray-900">
+    Shopping List
+  </h2>
+  <div class="w-full max-w-2xl bg-gray-100 py-8 px-4 border border-gray-200 rounded shadow-sm">
+
+  <ul id="items">
+    <%= render @items %>
   </ul>
 
-  <%= render 'form', item: @item %>
-</turbo-frame>
-
-<turbo-frame id="purchased">
-  <h3>Purchased (<%= @items.select{ |item| item.purchased }.count %>)</h3>
-  <ul data-controller="items">
-    <%= render @items.select{ |item| item.purchased } %>
-  </ul>
-</turbo-frame>
+  <div class="py-2 px-4">
+    <%= render 'form', item: @item %>
+  </div>
+</div>

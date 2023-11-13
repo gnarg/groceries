@@ -5,5 +5,6 @@ mkShell {
     bundler
     sqlite
     libyaml
+    foreman
   ];
 }
