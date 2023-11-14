@@ -26,7 +26,7 @@
           </div>
           <div class="flex flex-row text-sm">
               <% item.tags.each do |tag| %>
-                  <%= link_to tag.name, items_path(tag: tag.name, purchased: params[:purchased]), class: "px-1 py-1", data: { turbo_frame: 'items-container' } %>
+                  <%= link_to tag.name, items_path(tag: tag.name, purchased: params[:purchased]), class: "mx-1 px-1 bg-gray-400 rounded text-white", data: { turbo_frame: 'items-container' } %>
               <% end %>
           </div>
       </div>
