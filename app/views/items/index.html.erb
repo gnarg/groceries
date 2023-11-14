@@ -5,15 +5,16 @@
   </h2>
   <%= turbo_frame_tag "items-container", class: "block max-w-full w-full bg-gray-100 py-8 px-4 border border-gray-200 rounded shadow-sm" do %>
     <div class="border-b border-gray-200 w-full">
+      <% if params[:tag] %>
+        <div class="px-4"><%= link_to params[:tag], items_path(purchased: params[:purchased]) %></div>
+      <% end %>
       <ul class="flex space-x-2 justify-center">
         <li>
-          <%= link_to "Unpurchased", items_path(purchased: false),
-            class: "inline-block py-4 px-4 text-base font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300" 
-          %>
+          <%= link_to "Need", items_path(purchased: false, tag: params[:tag]),
+            class: "inline-block py-4 px-4 text-lg font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300" %>
         <li>
-          <%= link_to "Purchased", items_path(purchased: true),
-            class: "inline-block py-4 px-4 text-base font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300"
-          %>
+          <%= link_to "Bought", items_path(purchased: true, tag: params[:tag]),
+            class: "inline-block py-4 px-4 text-lg font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300" %>
         </li>
       </ul>
     </div>

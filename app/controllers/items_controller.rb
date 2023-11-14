@@ -17,7 +17,7 @@ class ItemsController < ApplicationController
     respond_to do |format|
       if @item.save
         format.turbo_stream
-        format.html { redirect_to item_url(@item), notice: "Todo was successfully created." }
+        format.html { redirect_to item_url(@item), notice: "Item was successfully created." }
       else
         format.html { render :new, status: :unprocessable_entity }
       end
@@ -34,7 +34,7 @@ class ItemsController < ApplicationController
     respond_to do |format|
       if @item.update(item_params)
         format.turbo_stream
-        format.html { redirect_to item_url(@item), notice: "Todo was successfully updated." }
+        format.html { redirect_to item_url(@item), notice: "Item was successfully updated." }
         format.json { render :show, status: :ok, location: @item }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -48,7 +48,7 @@ class ItemsController < ApplicationController
     @item.destroy
     respond_to do |format|
       format.turbo_stream { render turbo_stream: turbo_stream.remove("#{helpers.dom_id(@item)}_container") }
-      format.html { redirect_to item_url, notice: "Todo was successfully destroyed." }
+      format.html { redirect_to item_url, notice: "Item was successfully removed." }
       format.json { head :no_content }
     end
   end
