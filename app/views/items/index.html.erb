@@ -1,9 +1,9 @@
-<div class="mx-auto w-8/12">
+<div class="mx-auto w-11/12">
 
   <h2 class="text-2xl text-gray-900">
     Shopping List
   </h2>
-  <%= turbo_frame_tag "items-container", class: "block max-w-full w-full bg-gray-100 py-8 px-4 border border-gray-200 rounded shadow-sm" do %>
+  <%= turbo_frame_tag "items-container", class: "block max-w-full w-full bg-gray-100 py-4 px-4 border border-gray-200 rounded shadow-sm" do %>
     <div class="border-b border-gray-200 w-full">
       <% if params[:tag] %>
         <div class="px-4"><%= link_to params[:tag], items_path(purchased: params[:purchased]) %></div>
