@@ -10,3 +10,8 @@ services:
     VIRTUAL_HOST: groceries.guymon.family
     VIRTAUL_PORT: 3000
     LETSENCRYPT_HOST: groceries.guymon.family
+  networks:
+    - proxy
+networks:
+  proxy:
+    external: true

@@ -6,7 +6,7 @@
   <%= turbo_frame_tag "items-container", class: "block max-w-full w-full bg-gray-100 py-4 px-4 border border-gray-200 rounded shadow-sm" do %>
     <div class="border-b border-gray-200 w-full">
       <% if params[:tag] %>
-        <div class="px-4"><%= link_to params[:tag], items_path(purchased: params[:purchased]) %></div>
+        <div class="px-4 text-gray-500"><%= link_to link_to params[:tag] + ' X', items_path(purchased: params[:purchased]) %></div>
       <% end %>
       <ul class="flex space-x-2 justify-center">
         <li>
