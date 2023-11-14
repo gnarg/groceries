@@ -1,17 +1,21 @@
 ---
+version: '3.4'
 name: groceries
 services:
-  image: groceries:latest
-  expose:
-    - 3000
-  volumes:
-    - /data/groceries/storage:/rails/storage
-  environment:
-    VIRTUAL_HOST: groceries.guymon.family
-    VIRTAUL_PORT: 3000
-    LETSENCRYPT_HOST: groceries.guymon.family
-  networks:
-    - proxy
+  user: "936"
+  app:
+    image: groceries:latest
+    expose:
+      - 3000
+    volumes:
+      - /data/groceries/storage:/rails/storage
+    environment:
+      VIRTUAL_HOST: groceries.guymon.family
+      VIRTAUL_PORT: 3000
+      LETSENCRYPT_HOST: groceries.guymon.family
+      SECRET_KEY_BASE: na
+    networks:
+      - proxy
 networks:
   proxy:
     external: true
