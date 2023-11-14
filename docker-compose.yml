@@ -2,8 +2,8 @@
 version: '3.4'
 name: groceries
 services:
-  user: "936"
   app:
+    user: "936"
     image: groceries:latest
     expose:
       - 3000
