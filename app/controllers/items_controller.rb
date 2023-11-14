@@ -1,8 +1,10 @@
 class ItemsController < ApplicationController
   def index
     @items = Item.where(purchased: params[:purchased] || false)
+    if (params[:tag])
+      @items = @items.tagged_with(params[:tag])
+    end
     @item = Item.new
-    @tags = Item.tag_counts
   end
 
   def new
