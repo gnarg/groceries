@@ -44,7 +44,11 @@ class ItemsController < ApplicationController
   def destroy
     @item = Item.find(params[:id])
     @item.destroy
-    redirect_to root_url
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.remove("#{helpers.dom_id(@item)}_container") }
+      format.html { redirect_to item_url, notice: "Todo was successfully destroyed." }
+      format.json { head :no_content }
+    end
   end
 
   private
