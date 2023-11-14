@@ -1,24 +1,8 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Build
+`docker -H ssh://gnarg@nihility.lan build -t groceries:latest .`
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Deploy
+`cp docker-compose sync/nihility/groceries.yml`
+`docker -H ssh://gnarg@nihility.lan compose -f groceries.yml up -d`
