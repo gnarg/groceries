@@ -1,8 +1,12 @@
 # README
 
 ## Build
-`docker -H ssh://gnarg@nihility.lan build -t groceries:latest .`
+```
+docker -H ssh://gnarg@nihility.lan build -t groceries:latest .
+```
 
 ## Deploy
-`cp docker-compose sync/nihility/groceries.yml`
-`docker -H ssh://gnarg@nihility.lan compose -f groceries.yml up -d`
+```
+docker -H ssh://gnarg@nihility.lan compose down
+docker -H ssh://gnarg@nihility.lan compose up -d
+```
