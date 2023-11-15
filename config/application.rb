@@ -25,5 +25,6 @@ module Groceries
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.active_record.sqlite3_production_warning=false
+    config.require_master_key = false
   end
 end
