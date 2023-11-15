@@ -10,7 +10,7 @@ services:
     volumes:
       - /data/groceries/storage:/rails/storage
     environment:
-      VIRTUAL_HOST: groceries.guymon.family,groceries.nihility.lan
+      VIRTUAL_HOST: groceries.guymon.family
       VIRTAUL_PORT: 3000
       LETSENCRYPT_HOST: groceries.guymon.family
     networks:

@@ -26,5 +26,6 @@ module Groceries
 
     config.active_record.sqlite3_production_warning=false
     config.require_master_key = false
+    config.read_encrypted_secrets = false
   end
 end
