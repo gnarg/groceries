@@ -55,7 +55,9 @@ class ItemsController < ApplicationController
 
   private
   def item_params
-    params[:item][:tag_list].downcase!
+    if params[:item][:tag_list]
+      params[:item][:tag_list].downcase!
+    end
     params.require(:item).permit(:name, :purchased, :tag_list)
   end
 end
