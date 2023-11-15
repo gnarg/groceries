@@ -13,7 +13,6 @@ services:
       VIRTUAL_HOST: groceries.guymon.family,groceries.nihility.lan
       VIRTAUL_PORT: 3000
       LETSENCRYPT_HOST: groceries.guymon.family
-      SECRET_KEY_BASE: na
     networks:
       - proxy
 networks:
