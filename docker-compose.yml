@@ -16,6 +16,8 @@ services:
       SECRET_KEY_BASE: na
     networks:
       - proxy
+      - default
+    
 networks:
   proxy:
     external: true

@@ -34,7 +34,11 @@
     </div>
 
     <ul id="items">
-      <%= render @items %>
+      <% @items.each do |item| %>
+        <% cache [ item, params[:purchased] ] do %>
+          <%= render item %>
+        <% end %>
+      <% end %>
     </ul>
 
     <div class="py-2 px-4">
