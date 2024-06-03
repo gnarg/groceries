@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_12_071348) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_31_224411) do
   create_table "items", force: :cascade do |t|
     t.string "name"
     t.boolean "purchased", default: false, null: false
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "count", default: 0, null: false
   end
 
   create_table "taggings", force: :cascade do |t|
