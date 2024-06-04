@@ -1,12 +1,27 @@
 # README
 
+## Prepare
+```
+export DOCKER_HOST=ssh://gnarg@nihility.lan
+```
+
 ## Build
 ```
-docker -H ssh://gnarg@nihility.lan build -t groceries:latest .
+docker build -t groceries:latest .
 ```
 
 ## Deploy
 ```
-docker -H ssh://gnarg@nihility.lan compose down
-docker -H ssh://gnarg@nihility.lan compose up -d
+docker compose down
+docker compose up -d
+```
+
+## Migrate
+```
+docker run --rm -v /data/groceries/storage:/rails/storage groceries:latest bin/rails db:migrate
+```
+
+## Database
+```
+docker exec -ti groceries-app-1 bin/rails dbconsole
 ```
