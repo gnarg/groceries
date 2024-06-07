@@ -3,13 +3,12 @@ class ItemsController < ApplicationController
     session[:purchased] ||= false
     session[:purchased] = params[:purchased] if params[:purchased]
 
+    @items = Item.where(purchased: session[:purchased]).order("count DESC")
     if (params[:search] and not params[:search].empty?)
       @items = @items.where("LOWER(name) LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)
-      }%").order("count DESC")
+      }%")
     elsif (params[:tag])
-      @items = @items.tagged_with(params[:tag]).order("count DESC")
-    else
-      @items = Item.where(purchased: session[:purchased]).order("count DESC")
+      @items = @items.tagged_with(params[:tag])
     end
 
     @item = Item.new
