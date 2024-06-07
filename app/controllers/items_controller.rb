@@ -4,6 +4,7 @@ class ItemsController < ApplicationController
     session[:purchased] = params[:purchased] if params[:purchased]
 
     @items = Item.where(purchased: session[:purchased]).order("count DESC")
+    @items = @items.limit(20) if session[:purchased]
     if (params[:search] and not params[:search].empty?)
       @items = @items.where("LOWER(name) LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)
       }%")
