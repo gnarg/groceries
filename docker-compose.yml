@@ -10,14 +10,13 @@ services:
     volumes:
       - /data/groceries/storage:/rails/storage
     environment:
-      VIRTUAL_HOST: groceries.guymon.family
-      VIRTAUL_PORT: 3000
-      LETSENCRYPT_HOST: groceries.guymon.family
+      # VIRTUAL_HOST: groceries.guymon.family
+      # VIRTAUL_PORT: 3000
+      # LETSENCRYPT_HOST: groceries.guymon.family
       SECRET_KEY_BASE: na
     networks:
-      - proxy
-      - default
-    
+      - cloudflare
+
 networks:
-  proxy:
+  cloudflare:
     external: true
