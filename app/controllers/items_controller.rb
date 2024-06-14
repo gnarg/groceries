@@ -6,8 +6,7 @@ class ItemsController < ApplicationController
     @items = Item.where(purchased: session[:purchased]).order("count DESC")
     @items = @items.limit(20) if session[:purchased]
     if (params[:search] and not params[:search].empty?)
-      @items = @items.where("LOWER(name) LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)
-      }%")
+      @items = @items.joins(tags: :taggings).where("LOWER(items.name) LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%").or(@items.where("tags.name LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%")).distinct
     elsif (params[:tag])
       @items = @items.tagged_with(params[:tag])
     end
