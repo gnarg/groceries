@@ -1,31 +1,54 @@
 require 'rails_helper'
 
 RSpec.describe ItemsController, type: :controller do
-  let(:valid_attributes) { { name: 'Test Item' } }
+  let(:valid_attributes) { { name: 'Test Item', tag_list: 'test-tag' } }
   let(:invalid_attributes) { { name: '' } }
   let(:item) { Item.create!(valid_attributes) }
 
   describe "GET #index" do
-    # context "when session[:purchased] is set" do
-    #   it "limits items to 20" do
-    #     session[:purchased] = true
-    #     get :index
-    #     expect(assigns(:items).count).to be <= 20
-    #   end
-    # end
+    context "when session[:purchased] is set" do
+      # it "limits items to 20" do
+      #   session[:purchased] = true
+      #   get :index
+      #   expect(assigns(:items).count).to be <= 20
+      # end
+      it 'lists only purchased items' do
+        item.update!(purchased: true)
+        session[:purchased] = true
+        get :index
+        expect(assigns(:items)).to eq([item])
+      end
+    end
+
+    context "when session[:purchased] is not set" do
+      it 'lists only unpurchased items' do
+        item.update!(purchased: false)
+        get :index
+        expect(assigns(:items)).to eq([item])
+      end
+    end
+
+    it 'sorts items by the number of purchases' do
+      item.purchases.create!
+      get :index
+      expect(assigns(:items)).to eq([item])
+    end
 
     context "when params[:search] is provided" do
-      it "filters items by search term" do
+      it "filters item name by search term" do
         get :index, params: { search: 'test' }
+        expect(assigns(:items)).to include(item)
+      end
+
+      it "filters item tag by search term" do
+        get :index, params: { search: 'tag' }
         expect(assigns(:items)).to include(item)
       end
     end
 
     context "when params[:tag] is provided" do
       it "filters items by tag" do
-        item.tag_list.add('TestTag')
-        item.save
-        get :index, params: { tag: 'TestTag' }
+        get :index, params: { tag: 'test-tag' }
         expect(assigns(:items)).to include(item)
       end
     end
