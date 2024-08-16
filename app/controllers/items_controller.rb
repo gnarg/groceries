@@ -3,10 +3,14 @@ class ItemsController < ApplicationController
     session[:purchased] ||= false
     session[:purchased] = params[:purchased] if params[:purchased]
 
-    @items = Item.where(purchased: session[:purchased]).order("count DESC")
+    @items = Item.select('items.*, COUNT(purchases.id) AS purchase_count')
+      .where(purchased: session[:purchased]).joins(:purchases).where('purchases.created_at > ?', 1.month.ago)
+      .order('purchase_count DESC').group('items.id')
     @items = @items.limit(20) if session[:purchased]
     if (params[:search] and not params[:search].empty?)
-      @items = @items.joins(tags: :taggings).where("LOWER(items.name) LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%").or(@items.where("tags.name LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%")).distinct
+      @items = @items.joins(tags: :taggings)
+        .where("LOWER(items.name) LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%")
+        .or(@items.where("tags.name LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%")).distinct
     elsif (params[:tag])
       @items = @items.tagged_with(params[:tag])
     end

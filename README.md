@@ -1,5 +1,10 @@
 # README
 
+## Test
+```
+bin/rails test
+```
+
 ## Prepare
 ```
 export DOCKER_HOST=ssh://gnarg@nihility.lan
@@ -23,5 +28,11 @@ docker run --rm -v /data/groceries/storage:/rails/storage groceries:latest bin/r
 
 ## Database
 ```
-docker exec -ti groceries-app-1 bin/rails dbconsole
+docker exec -ti groceries-app-1 bin/rails db
+```
+
+## After Nix Update
+```
+rm -rf ~/.local/share/gem
+bundle install
 ```
