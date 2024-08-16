@@ -44,7 +44,7 @@ class ItemsController < ApplicationController
   def update
     @item = Item.find(params[:id])
     if params[:item][:purchased]
-      @item.create_purchase
+      Purchase.create!(item: @item)
     end
 
     respond_to do |format|
