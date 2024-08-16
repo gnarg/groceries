@@ -5,6 +5,9 @@ RSpec.describe ItemsController, type: :controller do
   let(:invalid_attributes) { { name: '' } }
   let(:item) { Item.create!(valid_attributes) }
 
+  let(:purchased_item) { Item.create!(name: 'Purchased Item', tag_list: 'test-tag', purchased: true) }
+  let(:unpurchased_item) { Item.create!(name: 'Unpurchased Item', tag_list: 'test-tag', purchased: false) }
+
   describe "GET #index" do
     context "when session[:purchased] is set" do
       # it "limits items to 20" do
@@ -13,53 +16,47 @@ RSpec.describe ItemsController, type: :controller do
       #   expect(assigns(:items).count).to be <= 20
       # end
       it 'lists only purchased items' do
-        item.update!(purchased: true)
         session[:purchased] = true
         get :index
-        expect(assigns(:items)).to eq([item])
+        expect(assigns(:items)).to eq([purchased_item])
       end
     end
 
     context "when session[:purchased] is not set" do
       it 'lists only unpurchased items' do
-        item.update!(purchased: false)
         get :index
-        expect(assigns(:items)).to eq([item])
+        expect(assigns(:items)).to eq([unpurchased_item])
       end
     end
 
     it 'sorts items by the number of purchases' do
-      item.purchases.create!
+      unpurchased_item.purchases.create!
+      popular_item = Item.create!(name: 'Popular Item', tag_list: 'test-tag', purchased: false)
+      popular_item.purchases.create!
+      popular_item.purchases.create!
       get :index
-      expect(assigns(:items)).to eq([item])
+      expect(assigns(:items)).to eq([popular_item, unpurchased_item])
     end
 
     context "when params[:search] is provided" do
       it "filters item name by search term" do
-        get :index, params: { search: 'test' }
-        expect(assigns(:items)).to include(item)
+        get :index, params: { search: 'item' }
+        expect(assigns(:items)).to include(unpurchased_item)
       end
 
       it "filters item tag by search term" do
         get :index, params: { search: 'tag' }
-        expect(assigns(:items)).to include(item)
+        expect(assigns(:items)).to include(unpurchased_item)
       end
     end
 
     context "when params[:tag] is provided" do
       it "filters items by tag" do
         get :index, params: { tag: 'test-tag' }
-        expect(assigns(:items)).to include(item)
+        expect(assigns(:items)).to include(unpurchased_item)
       end
     end
   end
-
-  # describe "GET #new" do
-  #   it "assigns a new item as @item" do
-  #     get :new
-  #     expect(assigns(:item)).to be_a_new(Item)
-  #   end
-  # end
 
   describe "POST #create" do
     context "with valid params" do
@@ -74,13 +71,6 @@ RSpec.describe ItemsController, type: :controller do
         expect(response).to redirect_to(Item.last)
       end
     end
-
-    # context "with invalid params" do
-    #   it "renders the new template" do
-    #     post :create, params: { item: invalid_attributes }
-    #     expect(response).to render_template("new")
-    #   end
-    # end
   end
 
   describe "GET #edit" do
