@@ -8,11 +8,14 @@ class ItemsController < ApplicationController
       .where(purchased: session[:purchased])
       .order('purchase_count DESC')
       .group('items.id')
+
     @items = @items.limit(20) if session[:purchased]
+
     if (params[:search] and not params[:search].empty?)
-      @items = @items.joins(tags: :taggings)
-        .where("LOWER(items.name) LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%")
-        .or(@items.where("tags.name LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%")).distinct
+      @items = @items.left_joins(tags: :taggings)
+      @items = @items.where("LOWER(items.name) LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%")
+       .or(@items.where("tags.name LIKE ?", "%#{Item.sanitize_sql_like(params[:search].downcase)}%"))
+       .distinct
     elsif (params[:tag])
       @items = @items.tagged_with(params[:tag])
     end
@@ -32,7 +35,7 @@ class ItemsController < ApplicationController
         format.turbo_stream
         format.html { redirect_to item_url(@item), notice: "Item was successfully created." }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -53,8 +56,8 @@ class ItemsController < ApplicationController
         format.html { redirect_to item_url(@item), notice: "Item was successfully updated." }
         format.json { render :show, status: :ok, location: @item }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @item.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @item.errors, status: :unprocessable_content }
       end
     end
   end

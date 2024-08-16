@@ -2,7 +2,7 @@
 
 ## Test
 ```
-bin/rails test
+bin/bundle exec rspec
 ```
 
 ## Prepare
