@@ -42,8 +42,7 @@ class ItemsController < ApplicationController
   def update
     @item = Item.find(params[:id])
     if params[:item][:purchased]
-      @item.count += 1
-      @item.save
+      @item.create_purchase
     end
 
     respond_to do |format|
