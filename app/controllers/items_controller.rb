@@ -4,7 +4,7 @@ class ItemsController < ApplicationController
     session[:purchased] = params[:purchased] if params[:purchased]
 
     @items = Item.select('items.*, COUNT(purchases.id) AS purchase_count')
-      .where(purchased: session[:purchased]).joins(:purchases).where('purchases.created_at > ?', 1.month.ago)
+      .where(purchased: session[:purchased]).left_outer_joins(:purchases).where('purchases.created_at > ?', 1.month.ago)
       .order('purchase_count DESC').group('items.id')
     @items = @items.limit(20) if session[:purchased]
     if (params[:search] and not params[:search].empty?)
