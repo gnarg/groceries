@@ -1,6 +1,0 @@
-<%= turbo_stream.append "items" do %>
-  <%= render "item", item: @item %>
-<% end %>
-<%= turbo_stream.replace "#{dom_id(Item.new)}_form" do %>
-  <%= render "form", item: Item.new %>
-<% end %>
