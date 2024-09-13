@@ -52,7 +52,7 @@ let needItem = (id: string) => {
 
 let boughtItem = (id: string) => {
   updateItem(id, { purchased: true });
-  // await pb.collection('groceries_purchases').create({ item: id });
+  // pb.collection('groceries_purchases').create({ item: id });
 }
 
 export { listItems, getItem, createItem, updateItem, deleteItem, needItem, boughtItem };
