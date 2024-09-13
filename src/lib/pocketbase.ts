@@ -3,12 +3,14 @@ import PocketBase from 'pocketbase';
 const pb = new PocketBase('https://db.guymon.family');
 
 type Item = {
+  id: string;
   name: string;
   tags: string;
   purchased: boolean;
+  purchases: string[];
 };
 
-let listItems = async (purchased: boolean, tag: string | null, search: string | null) => {
+const listItems = async (purchased: boolean, tag: string | null, search: string | null) => {
   let filter = `purchased = ${purchased}`;
   if (tag) {
     filter += ` && tags ~ '${tag}'`;
@@ -30,29 +32,32 @@ let listItems = async (purchased: boolean, tag: string | null, search: string | 
   return items.sort((a, b) => a.count > b.count ? -1 : 1);
 };
 
-let getItem = (id: string) => {
+const getItem = (id: string) => {
   return pb.collection('groceries_items').getOne(id);
 }
 
-let createItem = (item: Item) => {
+const createItem = (item: Item) => {
   return pb.collection('groceries_items').create(item);
 }
 
-let updateItem = (id: string, item: any) => {
+const updateItem = (id: string, item: any) => {
   pb.collection('groceries_items').update(id, item);
 }
 
-let deleteItem = (id: string) => {
+const deleteItem = (id: string) => {
   pb.collection('groceries_items').delete(id);
 }
 
-let needItem = (id: string) => {
+const needItem = (id: string) => {
   updateItem(id, { purchased: false });
 }
 
-let boughtItem = (id: string) => {
-  updateItem(id, { purchased: true });
-  // pb.collection('groceries_purchases').create({ item: id });
+const boughtItem = async (item: Item) => {
+  const purchase = await pb.collection('groceries_purchases').create({ item: item.id });
+  if (!item.purchases) {
+    item.purchases = [];
+  }
+  updateItem(item.id, { purchased: true, purchases: item.purchases.concat(purchase.id) });
 }
 
 export { listItems, getItem, createItem, updateItem, deleteItem, needItem, boughtItem };

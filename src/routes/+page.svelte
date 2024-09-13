@@ -10,7 +10,7 @@
   $: items = listItems(purchased, filter_tag, search);
 
   let new_item = { name: '', tags: '', purchased: false };
-  let addNewItem = async () => {
+  const addNewItem = async () => {
     const item = await createItem(new_item);
     new_item = { name: '', tags: '', purchased: false };
     items = listItems(purchased, filter_tag, search);
