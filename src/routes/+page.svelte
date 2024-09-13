@@ -1,14 +1,78 @@
 <script>
+  // @ts-nocheck
 	import Item from "./Item.svelte";
 
-  let items = [
+  let all_items = [
     {
       id: 1,
       name: "Apples",
       purchased: false,
-      tags: [{ name: "fruit" }],
+      tags: [ "fruit" ],
     },
+    {
+      id: 2,
+      name: "Bread",
+      purchased: true,
+      tags: [ "bakery" ],
+    },
+    {
+      id: 3,
+      name: "Milk",
+      purchased: false,
+      tags: [ "dairy" ],
+    },
+    {
+      id: 4,
+      name: "Eggs",
+      purchased: true,
+      tags: [ "dairy" ],
+    },
+    {
+      id: 5,
+      name: "Cheese",
+      purchased: false,
+      tags: [ "dairy" ],
+    },
+    {
+      id: 6,
+      name: "Butter",
+      purchased: true,
+      tags: [ "dairy" ],
+    },
+    {
+      id: 7,
+      name: "Chicken",
+      purchased: false,
+      tags: [ "meat" ],
+    },
+    {
+      id: 8,
+      name: "Beef",
+      purchased: true,
+      tags: [ "meat" ],
+    },
+    {
+      id: 9,
+      name: "Pork",
+      purchased: false,
+      tags: [ "meat" ],
+    },
+    {
+      id: 10,
+      name: "Fish",
+      purchased: true,
+      tags: [ "meat" ],
+    }
   ];
+
+  let purchased = false;
+  let filter_tag = null;
+  let search = null;
+  $: items = all_items.filter(item => {
+    return item.purchased === purchased && 
+    (!filter_tag || item.tags.includes(filter_tag)) &&
+    (!search || item.name.toLowerCase().includes(search.toLowerCase() || item.tags.includes(search.toLowerCase())));
+  });
 </script>
 
 <div class="mx-auto w-11/12 max-w-3xl">
@@ -17,39 +81,37 @@
     Shopping List
   </h2>
 
-  <form>
-    <div class="flex items-stretch flex-grow px-4 py-2">
-      <input id="search" type="text" name="search" class="block w-full rounded-none rounded-l-md sm:text-sm border-gray-300" placeholder="Search" />
-      <button value="Search" type="submit">
-        <span class="sr-only">Clear</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mx-2 my-2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </button>
-    </div>
-  </form>
+  <div class="flex items-stretch flex-grow px-4 py-2">
+    <input id="search" type="text" name="search" class="block w-full rounded-none rounded-l-md sm:text-sm border-gray-300" placeholder="Search" bind:value={search} />
+    <button on:click={() => search = null}>
+      <span class="sr-only">Clear</span>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mx-2 my-2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </button>
+  </div>
 
   <div id="items-container" class="block max-w-full w-full bg-gray-100 py-4 px-4 border border-gray-200 rounded shadow-sm">
     <div class="border-b border-gray-200 w-full">
-      <!-- <% if params[:tag] %>
-        <div class="px-1 mx-4 text-white bg-gray-400 rounded w-min">
-          <%= link_to link_to params[:tag], items_path(purchased: params[:purchased]) %>
-        </div>
-      <% end %> -->
+      {#if filter_tag}
+      <div class="px-1 mx-4 text-white bg-gray-400 rounded w-min">
+        <button on:click={() => filter_tag = null}>{filter_tag}</button>
+      </div>
+      {/if}
 
       <ul class="flex space-x-2 justify-center">
         <li>
-          <a href="/items?purchased=false" class="inline-block py-4 px-4 text-lg font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300">Need</a>
+          <button on:click={() => purchased = false} class="inline-block py-4 px-4 text-lg font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300">Need</button>
         </li>
         <li>
-          <a href="/items?purchased=true" class="inline-block py-4 px-4 text-lg font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300">Bought</a>
+          <button on:click={() => purchased = true} class="inline-block py-4 px-4 text-lg font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300">Bought</button>
         </li>
       </ul>
     </div>
 
     <ul id="items">
       {#each items as item}
-        <Item {item} />
+      <Item {item} bind:filter_tag />
       {/each}
     </ul>
 
