@@ -1,4 +1,6 @@
 <script>
+	import { needItem, boughtItem } from "$lib/pocketbase";
+
   export let item;
   export let filter_tag;
 </script>
@@ -8,37 +10,37 @@
 
     <div class="flex justify-start space-x-3">
       {#if item.purchased }
-      <button class="bg-green-600 px-2 py-2 rounded">
-        <span class="sr-only">Mark as unpurchased</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-        </svg>
-      </button>
+        <button class="bg-green-600 px-2 py-2 rounded" on:click={() => {item.purchased = false; needItem(item.id)}}>
+          <span class="sr-only">Mark as unpurchased</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+        </button>
       {:else}
-      <button class="bg-gray-400 px-2 py-2 rounded">
-        <span class="sr-only">Mark as purchased</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-        </svg>
-      </button>
+        <button class="bg-gray-400 px-2 py-2 rounded" on:click={() => {item.purchased = true; boughtItem(item.id)}}>
+          <span class="sr-only">Mark as purchased</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+        </button>
       {/if}
     </div>
 
     <div class="flex flex-col justify-start w-full">
-        <div class="flex flex-row">
-          {#if item.purchased}
+      <div class="flex flex-row">
+        {#if item.purchased}
           <span class="line-through">{item.name}</span>
-          {:else}
+        {:else}
           <span>{item.name}</span>
-          {/if}
-        </div>
-        <div class="flex flex-row text-sm">
-          {#each item.tags.split(',') as tag}
+        {/if}
+      </div>
+      <div class="flex flex-row text-sm">
+        {#each item.tags.split(' ') as tag}
           <div class="mx-1 px-1 bg-gray-400 rounded text-white">
             <button on:click={() => filter_tag = tag}>{tag}</button>
           </div>
-          {/each}
-        </div>
+        {/each}
+      </div>
     </div>
 
     <button class="bg-green-600 px-2 py-2 rounded">
