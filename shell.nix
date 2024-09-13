@@ -6,5 +6,6 @@ mkShell {
     sqlite
     libyaml
     foreman
+    nodejs_22
   ];
 }
