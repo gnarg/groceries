@@ -56,7 +56,9 @@
         <li>&nbsp;</li>
       {:then items} 
         {#each items as item}
-          <Item {item} bind:filter_tag />
+          {#key item.id}
+            <Item {item} bind:filter_tag />
+          {/key}
         {/each}
       {/await}
     </ul>

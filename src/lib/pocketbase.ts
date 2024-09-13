@@ -2,6 +2,12 @@ import PocketBase from 'pocketbase';
 
 const pb = new PocketBase('https://db.guymon.family');
 
+type Item = {
+  name: string;
+  tags: string;
+  purchased: boolean;
+};
+
 let listItems = async (purchased: boolean, tag: string | null, search: string | null) => {
   let filter = `purchased = ${purchased}`;
   if (tag) {
@@ -28,12 +34,16 @@ let getItem = (id: string) => {
   return pb.collection('groceries_items').getOne(id);
 }
 
-let createItem = (item: any) => {
+let createItem = (item: Item) => {
   return pb.collection('groceries_items').create(item);
 }
 
 let updateItem = (id: string, item: any) => {
   pb.collection('groceries_items').update(id, item);
+}
+
+let deleteItem = (id: string) => {
+  pb.collection('groceries_items').delete(id);
 }
 
 let needItem = (id: string) => {
@@ -45,4 +55,4 @@ let boughtItem = (id: string) => {
   // await pb.collection('groceries_purchases').create({ item: id });
 }
 
-export { listItems, getItem, createItem, updateItem, needItem, boughtItem };
+export { listItems, getItem, createItem, updateItem, deleteItem, needItem, boughtItem };

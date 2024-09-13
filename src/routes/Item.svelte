@@ -1,11 +1,20 @@
 <script>
-	import { needItem, boughtItem } from "$lib/pocketbase";
+  // @ts-nocheck
+	import { needItem, boughtItem, deleteItem } from "$lib/pocketbase";
 
   export let item;
   export let filter_tag;
+
+  let nodeRef;
+  const remove = () => {
+    if (confirm(`Really delete ${item.name}?`)) {
+      deleteItem(item.id);
+      nodeRef.parentNode.removeChild(nodeRef);
+    }
+  }
 </script>
 
-<li id="item-id_container" class="py-2 border-b border-gray-300">
+<li id="item-id_container" class="py-2 border-b border-gray-300" bind:this={nodeRef}>
   <div class="flex justify-between items-center space-x-2">
 
     <div class="flex justify-start space-x-3">
@@ -50,7 +59,7 @@
       </svg>
     </button>
 
-    <button class="bg-red-600 px-2 py-2 rounded">
+    <button class="bg-red-600 px-2 py-2 rounded" on:click={() => remove()}>
     <!-- turbo_confirm: "Really delete #{item.name}?" -->
       <span class="sr-only">Delete</span>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
