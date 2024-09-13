@@ -33,7 +33,7 @@
           {/if}
         </div>
         <div class="flex flex-row text-sm">
-          {#each item.tags as tag}
+          {#each item.tags.split(',') as tag}
           <div class="mx-1 px-1 bg-gray-400 rounded text-white">
             <button on:click={() => filter_tag = tag}>{tag}</button>
           </div>
