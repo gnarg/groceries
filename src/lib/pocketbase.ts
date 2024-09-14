@@ -37,10 +37,12 @@ const getItem = (id: string) => {
 }
 
 const createItem = (item: Item) => {
+  item.tags = item.tags.toLowerCase();
   return pb.collection('groceries_items').create(item);
 }
 
 const updateItem = (id: string, item: any) => {
+  item.tags = item.tags.toLowerCase();
   pb.collection('groceries_items').update(id, item);
 }
 
