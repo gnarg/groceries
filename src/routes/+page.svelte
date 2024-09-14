@@ -2,6 +2,20 @@
   // @ts-nocheck
 	import Item from "./Item.svelte";
   import { listItems, createItem } from '$lib/pocketbase';
+  import PocketBase from 'pocketbase';
+
+  const pb = new PocketBase('https://db.guymon.family');
+
+  let w = window.open()
+
+  pb.collection("users").authWithOAuth2({
+    provider: 'google',
+    urlCallback: (url) => {
+      if (w) {
+        w.location.href = url
+      }
+    },
+  });
 
   let purchased = false;
   let filter_tag = null;
