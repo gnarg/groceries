@@ -1,0 +1,89 @@
+<script>
+  // @ts-nocheck
+	import { needItem, boughtItem, deleteItem, updateItem } from "$lib/pocketbase";
+
+  export let item;
+  export let filter_tag;
+
+  let mode = 'view';
+
+  let nodeRef;
+  const remove = () => {
+    if (confirm(`Really delete ${item.name}?`)) {
+      deleteItem(item.id);
+      nodeRef.parentNode.removeChild(nodeRef);
+    }
+  }
+  const update = () => {
+    mode = 'view';
+    updateItem(item.id, item);
+  }
+</script>
+
+<li id="item_{item.id}_container" class="py-2 border-b border-gray-300" bind:this={nodeRef}>
+  {#if mode === 'view'}
+    <div class="flex justify-between items-center space-x-2">
+      <div class="flex justify-start space-x-3">
+        {#if item.purchased }
+          <button class="bg-green-600 px-2 py-2 rounded" on:click={() => {item.purchased = false; needItem(item.id)}}>
+            <span class="sr-only">Mark as unpurchased</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        {:else}
+          <button class="bg-gray-400 px-2 py-2 rounded" on:click={() => {item.purchased = true; boughtItem(item)}}>
+            <span class="sr-only">Mark as purchased</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        {/if}
+      </div>
+
+      <div class="flex flex-col justify-start w-full">
+        <div class="flex flex-row">
+          {#if item.purchased}
+            <span class="line-through">{item.name}</span>
+          {:else}
+            <span>{item.name}</span>
+          {/if}
+        </div>
+        <div class="flex flex-row text-sm">
+          {#each item.tags.split(' ') as tag}
+            <div class="mx-1 px-1 bg-gray-400 rounded text-white">
+              <button on:click={() => filter_tag = tag}>{tag}</button>
+            </div>
+          {/each}
+        </div>
+      </div>
+
+      <button class="bg-green-600 px-2 py-2 rounded" on:click={() => mode = 'edit'}>
+        <span class="sr-only">Edit</span>
+        <svg class="w-3 h-3 text-white dark:text-dark-gray" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.418 17.861 1 20l2.139-6.418m4.279 4.279 10.7-10.7a3.027 3.027 0 0 0-2.14-5.165c-.802 0-1.571.319-2.139.886l-10.7 10.7m4.279 4.279-4.279-4.279m2.139 2.14 7.844-7.844m-1.426-2.853 4.279 4.279"/>
+        </svg>
+      </button>
+
+      <button class="bg-red-600 px-2 py-2 rounded" on:click={() => remove()}>
+      <!-- turbo_confirm: "Really delete #{item.name}?" -->
+        <span class="sr-only">Delete</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+  {:else}
+    <div class="flex items-stretch flex-grow">
+      <label for="name" class="sr-only">Name</label>
+      <input type="text" id="item_name" name="name" class="block w-full rounded-none rounded-l-md sm:text-sm border-gray-300" placeholder="Name" bind:value={item.name} />
+    </div>
+    <div class="flex items-stretch flex-grow">
+      <label for="tags" class="sr-only">Tags</label>
+      <input type="text" id="item_tags" name="tags" class="block w-full rounded-none rounded-l-md sm:text-sm border-gray-300" placeholder="Tags" bind:value={item.tags} />
+      <button class="-ml-px relative px-4 py-2 border border-blue-600 text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700" on:click={() => update()}>
+        Update
+      </button>
+    </div>
+  {/if}
+</li>
