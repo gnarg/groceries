@@ -42,7 +42,9 @@ const createItem = (item: Item) => {
 }
 
 const updateItem = (id: string, item: any) => {
-  item.tags = item.tags.toLowerCase();
+  if (item.tags) {
+    item.tags = item.tags.toLowerCase();
+  }
   pb.collection('groceries_items').update(id, item);
 }
 
