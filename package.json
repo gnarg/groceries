@@ -23,6 +23,7 @@
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.36.0",
 		"globals": "^15.0.0",
+		"pocketbase": "^0.21.5",
 		"postcss": "^8.4.45",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
@@ -36,8 +37,5 @@
 		"vite": "^5.0.3",
 		"vitest": "^2.0.0"
 	},
-	"type": "module",
-	"dependencies": {
-		"pocketbase": "^0.21.5"
-	}
+	"type": "module"
 }
