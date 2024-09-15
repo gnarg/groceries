@@ -1,20 +1,12 @@
 <script lang='ts'>
 	import Item from "./Item.svelte";
   import { listItems, createItem } from '$lib/pocketbase';
-  import PocketBase from 'pocketbase';
+  import { goto } from "$app/navigation";
 
-  const pb = new PocketBase('https://db.guymon.family');
-
-  // let w = window.open()
-
-  // pb.collection("users").authWithOAuth2({
-  //   provider: 'google',
-  //   urlCallback: (url) => {
-  //     if (w) {
-  //       w.location.href = url
-  //     }
-  //   },
-  // });
+  export let data: { authStore: { isValid: boolean } };
+  if (!data.authStore.isValid) {
+    goto('/auth');
+  }
 
   let purchased = false;
   let filter_tag: string | null = null;
