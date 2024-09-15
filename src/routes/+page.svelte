@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang='ts'>
 	import Item from "./Item.svelte";
   import { listItems, createItem } from '$lib/pocketbase';
   import PocketBase from 'pocketbase';
@@ -18,8 +17,8 @@
   // });
 
   let purchased = false;
-  let filter_tag = null;
-  let search = null;
+  let filter_tag: string | null = null;
+  let search: string | null = null;
 
   $: items = listItems(purchased, filter_tag, search);
 
@@ -50,9 +49,9 @@
   <div id="items-container" class="block max-w-full w-full bg-gray-100 py-4 px-4 border border-gray-200 rounded shadow-sm">
     <div class="border-b border-gray-200 w-full">
       {#if filter_tag}
-      <div class="px-1 mx-4 text-white bg-gray-400 rounded w-min">
-        <button on:click={() => filter_tag = null}>{filter_tag}</button>
-      </div>
+        <div class="px-1 mx-4 text-white bg-gray-400 rounded w-min">
+          <button on:click={() => filter_tag = null}>{filter_tag}</button>
+        </div>
       {/if}
 
       <ul class="flex space-x-2 justify-center">
@@ -67,7 +66,7 @@
 
     <ul id="items">
       {#await items}
-        <li>&nbsp;</li>
+        <li>...</li>
       {:then items} 
         {#each items as item}
           {#key item.id}
