@@ -4,12 +4,8 @@ import { redirect } from "@sveltejs/kit";
 const pb = new PocketBase('https://db.guymon.family');
 
 export async function load() {
-  const authData = await pb.collection('users').authRefresh().then((data) => {
-    return data;
-  }).catch(() => {
-    redirect(303, '/auth');
-  });
-  return { authStore: pb.authStore };
+  await pb.collection('users').authRefresh().catch(() => redirect(303, '/auth') );
+  if (!pb.authStore.isValid) redirect(303, '/auth');
 }
 
 export const ssr = false;

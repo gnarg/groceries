@@ -1,12 +1,6 @@
 <script lang='ts'>
 	import Item from "./Item.svelte";
   import { listItems, createItem } from '$lib/pocketbase';
-  import { goto } from "$app/navigation";
-
-  export let data: { authStore: { isValid: boolean } };
-  if (!data.authStore.isValid) {
-    goto('/auth');
-  }
 
   let purchased = false;
   let filter_tag: string | null = null;
