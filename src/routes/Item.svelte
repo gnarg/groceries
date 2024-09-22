@@ -16,7 +16,7 @@
   }
   const update = () => {
     mode = 'view';
-    updateItem(item.id, item);
+    updateItem(item);
   }
 </script>
 
