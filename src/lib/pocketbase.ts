@@ -8,6 +8,7 @@ type ItemType = {
   tags?: string;
   purchased?: boolean;
   purchases?: string[];
+  notes?: string; // Optional notes field for items in 'need' state
 };
 
 const listItems = async (purchased: boolean, tag: string | null, search: string | null) => {
@@ -66,7 +67,7 @@ const boughtItem = async (item: ItemType) => {
   if (!item.purchases) {
     item.purchases = [];
   }
-  updateItem({id: item.id, purchased: true, purchases: item.purchases.concat(purchase.id) });
+  updateItem({id: item.id!, purchased: true, purchases: item.purchases.concat(purchase.id), notes: null }); // Clear notes when item is bought
 }
 
 export { listItems, getItem, createItem, updateItem, deleteItem, needItem, boughtItem };

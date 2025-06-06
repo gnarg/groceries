@@ -8,10 +8,10 @@
 
   $: items = listItems(purchased, filter_tag, search);
 
-  let new_item = { name: '', tags: '', purchased: false };
+  let new_item = { name: '', tags: '', purchased: false, notes: '' };
   const addNewItem = async () => {
     const item = await createItem(new_item);
-    new_item = { name: '', tags: '', purchased: false };
+    new_item = { name: '', tags: '', purchased: false, notes: '' };
     items = listItems(purchased, filter_tag, search);
   }
 </script>
@@ -65,7 +65,11 @@
     <div class="py-2 px-4">
       <label for="name" class="sr-only" />
       <input type="text" name="name" class="block w-full rounded-none sm:text-sm border-gray-300" placeholder="Item name..." bind:value={new_item.name} />
-      <div class="flex item-stretch flex-grow">
+      <div class="mt-1">
+        <label for="notes" class="sr-only" />
+        <input type="text" name="notes" class="block w-full rounded-none sm:text-sm border-gray-300" placeholder="Notes (e.g., quantity, variety)..." bind:value={new_item.notes} />
+      </div>
+      <div class="flex item-stretch flex-grow mt-1">
         <label for="tag_list" class="sr-only" />
         <input type="text" name="tag_list" class="block w-full rounded-none sm:text-sm border-gray-300" placeholder="Tags..." bind:value={new_item.tags} />
         <button type="submit"  class="-ml-px relative px-4 py-2 border border-blue-600 text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700" on:click={() => addNewItem() }>

@@ -56,6 +56,9 @@
             </div>
           {/each}
         </div>
+        {#if !item.purchased && item.notes}
+          <div class="text-sm text-gray-500 mt-1 ml-1">Notes: {item.notes}</div>
+        {/if}
       </div>
 
       <button class="bg-green-600 px-2 py-2 rounded" on:click={() => mode = 'edit'}>
@@ -73,17 +76,27 @@
         </svg>
       </button>
     </div>
-  {:else}
-    <div class="flex items-stretch flex-grow">
-      <label for="name" class="sr-only">Name</label>
-      <input type="text" id="item_name" name="name" class="block w-full rounded-none rounded-l-md sm:text-sm border-gray-300" placeholder="Name" bind:value={item.name} />
-    </div>
-    <div class="flex items-stretch flex-grow">
-      <label for="tags" class="sr-only">Tags</label>
-      <input type="text" id="item_tags" name="tags" class="block w-full rounded-none rounded-l-md sm:text-sm border-gray-300" placeholder="Tags" bind:value={item.tags} />
-      <button class="-ml-px relative px-4 py-2 border border-blue-600 text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700" on:click={() => update()}>
-        Update
-      </button>
+  {:else} <!-- Corresponds to mode === 'edit' -->
+    <div class="flex flex-col space-y-2">
+      <div class="flex items-stretch flex-grow">
+        <label for="name" class="sr-only">Name</label>
+        <input type="text" id="item_name" name="name" class="block w-full rounded-md sm:text-sm border-gray-300" placeholder="Name" bind:value={item.name} />
+      </div>
+      <div class="flex items-stretch flex-grow">
+        <label for="tags" class="sr-only">Tags</label>
+        <input type="text" id="item_tags" name="tags" class="block w-full rounded-md sm:text-sm border-gray-300" placeholder="Tags" bind:value={item.tags} />
+      </div>
+      {#if !item.purchased}
+        <div class="flex items-stretch flex-grow">
+          <label for="notes" class="sr-only">Notes</label>
+          <input type="text" id="item_notes" name="notes" class="block w-full rounded-md sm:text-sm border-gray-300" placeholder="Notes (e.g., quantity, variety)" bind:value={item.notes} />
+        </div>
+      {/if}
+      <div class="flex items-stretch flex-grow">
+          <button class="w-full relative px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" on:click={() => update()}>
+            Update
+          </button>
+      </div>
     </div>
   {/if}
 </li>
