@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Groceries - Authentication</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="font-inter">
+    <div x-data="authPage()" x-init="init()">
+        <div class="container mx-auto p-4">
+            <h1 class="text-2xl font-bold mb-4">Authenticating...</h1>
+            <p class="text-gray-600">Redirecting to Google OAuth...</p>
+        </div>
+    </div>
+    
+    <script type="module" src="js/auth.js"></script>
+    <script type="module">
+        function authPage() {
+            return {
+                async init() {
+                    const redirectUrl = window.location.origin + '/auth-redirect.html';
+                    
+                    try {
+                        const authProviders = await Alpine.store('auth').getAuthProviders();
+                        const provider = authProviders.find(p => p.name === 'google');
+                        
+                        if (provider) {
+                            Alpine.store('auth').setProvider(provider);
+                            window.location.href = provider.authUrl + redirectUrl;
+                        } else {
+                            console.error('Google auth provider not found');
+                        }
+                    } catch (error) {
+                        console.error('Auth initialization failed:', error);
+                    }
+                }
+            }
+        }
+        
+        window.authPage = authPage;
+    </script>
+</body>
+</html>
