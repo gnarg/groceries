@@ -17,8 +17,19 @@ function groceryApp() {
 
         async loadItems() {
             this.loading = true;
+            console.log('Loading items with purchased:', this.purchased, 'filterTag:', this.filterTag, 'search:', this.search); // Debug log
+            console.log('Auth status:', window.groceryAPI.pb.authStore.isValid, 'User:', window.groceryAPI.pb.authStore.model); // Debug log
+            
+            // Check if user is authenticated
+            if (!window.groceryAPI.pb.authStore.isValid) {
+                console.log('User not authenticated, redirecting to auth...');
+                window.location.href = 'auth.html';
+                return;
+            }
+            
             try {
                 this.items = await window.groceryAPI.listItems(this.purchased, this.filterTag, this.search);
+                console.log('Loaded items:', this.items); // Debug log
                 // Ensure tags is always a string
                 this.items = this.items.map(item => ({
                     ...item,

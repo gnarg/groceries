@@ -37,8 +37,14 @@
         </div>
     </div>
     
-    <script type="module" src="js/auth.js"></script>
-    <script type="module">
+    <!-- PocketBase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.5/dist/pocketbase.umd.js"></script>
+    
+    <!-- App scripts -->
+    <script src="js/pocketbase.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
         function authRedirect() {
             return {
                 error: '',
@@ -48,12 +54,13 @@
                     const params = new URLSearchParams(window.location.search);
                     
                     try {
-                        const authState = Alpine.store('auth');
-                        const provider = authState.provider;
-                        
-                        if (!provider) {
+                        // Get provider data from localStorage
+                        const providerData = localStorage.getItem('authState');
+                        if (!providerData) {
                             throw new Error('No auth provider found in storage');
                         }
+                        
+                        const provider = JSON.parse(providerData);
                         
                         const state = params.get('state');
                         if (provider.state !== state) {
@@ -65,15 +72,16 @@
                             throw new Error('No authorization code received');
                         }
                         
-                        await authState.authenticateWithOAuth2(
+                        const result = await window.groceryAPI.pb.collection('users').authWithOAuth2Code(
                             provider.name,
                             code,
                             provider.codeVerifier,
-                            redirectUrl
+                            redirectUrl,
+                            { emailVisibility: false, nameVisibility: false }
                         );
                         
                         // Redirect to main app
-                        window.location.href = '/';
+                        window.location.href = 'index.html';
                         
                     } catch (err) {
                         console.error('Auth redirect error:', err);

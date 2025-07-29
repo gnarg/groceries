@@ -3,6 +3,9 @@
 
 const pb = new PocketBase('https://db.guymon.family');
 
+// PocketBase automatically handles auth state persistence in localStorage
+console.log('PocketBase initialized. Auth state:', pb.authStore.isValid);
+
 /**
  * @typedef {Object} ItemType
  * @property {string} [id] - Item ID
@@ -21,7 +24,9 @@ const listItems = async (purchased, tag, search) => {
   if (search) {
     filter += ` && (tags ~ '${search}' || name ~ '${search}')`;
   }
+  console.log('Filter:', filter); // Debug log
   const results = await pb.collection('groceries_items').getFullList({ filter, expand: 'purchases', fields: '*,purchases.created_at' });
+  console.log('Raw results:', results); // Debug log
   let items = results.map((item) => {
     if (item.expand && item.expand.purchases) {
       let recentPurchases = item.expand.purchases.filter((purchase) =>
@@ -74,6 +79,7 @@ const boughtItem = async (item) => {
 
 // Make functions globally available
 window.groceryAPI = {
+  pb, // Expose PocketBase instance for auth
   listItems,
   getItem,
   createItem,

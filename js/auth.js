@@ -1,7 +1,4 @@
-import PocketBase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.21.5/dist/pocketbase.es.mjs';
-
-const pb = new PocketBase('https://db.guymon.family');
-
+// Use the global PocketBase instance from pocketbase.js
 // Alpine.js store for auth state
 Alpine.store('auth', {
     user: null,
@@ -32,7 +29,7 @@ Alpine.store('auth', {
 
     async getAuthProviders() {
         try {
-            const authMethods = await pb.collection('users').listAuthMethods();
+            const authMethods = await window.groceryAPI.pb.collection('users').listAuthMethods();
             return authMethods.authProviders;
         } catch (error) {
             console.error('Error fetching auth providers:', error);
@@ -42,7 +39,7 @@ Alpine.store('auth', {
 
     async authenticateWithOAuth2(providerName, code, codeVerifier, redirectUrl) {
         try {
-            const result = await pb.collection('users').authWithOAuth2Code(
+            const result = await window.groceryAPI.pb.collection('users').authWithOAuth2Code(
                 providerName,
                 code,
                 codeVerifier,
@@ -55,6 +52,14 @@ Alpine.store('auth', {
             console.error('OAuth2 authentication failed:', error);
             throw error;
         }
+    },
+
+    isAuthenticated() {
+        return window.groceryAPI.pb.authStore.isValid;
+    },
+
+    getCurrentUser() {
+        return window.groceryAPI.pb.authStore.model;
     }
 });
 
@@ -62,5 +67,3 @@ Alpine.store('auth', {
 window.initAuth = () => {
     Alpine.store('auth').init();
 };
-
-export { pb };
