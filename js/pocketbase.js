@@ -1,4 +1,5 @@
-import PocketBase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.21.5/dist/pocketbase.es.mjs';
+// PocketBase setup using global script (not ES6 modules)
+// Include PocketBase from CDN first, then this script
 
 const pb = new PocketBase('https://db.guymon.family');
 
@@ -71,4 +72,13 @@ const boughtItem = async (item) => {
   updateItem({id: item.id, purchased: true, purchases: item.purchases.concat(purchase.id), notes: null }); // Clear notes when item is bought
 }
 
-export { listItems, getItem, createItem, updateItem, deleteItem, needItem, boughtItem };
+// Make functions globally available
+window.groceryAPI = {
+  listItems,
+  getItem,
+  createItem,
+  updateItem,
+  deleteItem,
+  needItem,
+  boughtItem
+};

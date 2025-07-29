@@ -1,5 +1,4 @@
-// Import PocketBase functions
-import { listItems, createItem, updateItem, deleteItem, needItem, boughtItem } from './pocketbase.js';
+// Alpine.js components using global scripts (not ES6 modules)
 
 // Main grocery app Alpine.js data
 function groceryApp() {
@@ -19,9 +18,15 @@ function groceryApp() {
         async loadItems() {
             this.loading = true;
             try {
-                this.items = await listItems(this.purchased, this.filterTag, this.search);
+                this.items = await window.groceryAPI.listItems(this.purchased, this.filterTag, this.search);
+                // Ensure tags is always a string
+                this.items = this.items.map(item => ({
+                    ...item,
+                    tags: item.tags || ''
+                }));
             } catch (error) {
                 console.error('Error loading items:', error);
+                this.items = [];
             } finally {
                 this.loading = false;
             }
@@ -51,7 +56,7 @@ function groceryApp() {
             if (!this.newItem.name.trim()) return;
             
             try {
-                await createItem(this.newItem);
+                await window.groceryAPI.createItem(this.newItem);
                 this.newItem = { name: '', tags: '', purchased: false, notes: '' };
                 this.loadItems();
             } catch (error) {
@@ -70,14 +75,14 @@ function itemComponent(item) {
         async togglePurchased() {
             try {
                 if (this.item.purchased) {
-                    await needItem(this.item.id);
+                    await window.groceryAPI.needItem(this.item.id);
                     this.item.purchased = false;
                 } else {
-                    await boughtItem(this.item);
+                    await window.groceryAPI.boughtItem(this.item);
                     this.item.purchased = true;
                 }
-                // Trigger parent reload
-                this.$root.loadItems();
+                // Trigger parent reload by dispatching event
+                this.$dispatch('reload-items');
             } catch (error) {
                 console.error('Error toggling purchased status:', error);
             }
@@ -85,9 +90,9 @@ function itemComponent(item) {
 
         async updateItem() {
             try {
-                await updateItem(this.item);
+                await window.groceryAPI.updateItem(this.item);
                 this.mode = 'view';
-                this.$root.loadItems();
+                this.$dispatch('reload-items');
             } catch (error) {
                 console.error('Error updating item:', error);
             }
@@ -96,8 +101,8 @@ function itemComponent(item) {
         async deleteItem() {
             if (confirm(`Really delete ${this.item.name}?`)) {
                 try {
-                    await deleteItem(this.item.id);
-                    this.$root.loadItems();
+                    await window.groceryAPI.deleteItem(this.item.id);
+                    this.$dispatch('reload-items');
                 } catch (error) {
                     console.error('Error deleting item:', error);
                 }
