@@ -13,6 +13,7 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
             git
+            jujutsu
             nodejs_24
             claude-code
           ];
