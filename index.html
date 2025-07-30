@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="favicon.png" />
+    <link rel="icon" href="static/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Groceries</title>
-    
+
     <!-- PWA Meta Tags -->
     <meta name="description" content="Grocery shopping list app">
     <meta name="theme-color" content="#ffffff">
     <link rel="manifest" href="manifest.json">
-    
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -24,15 +24,15 @@
             }
         }
     </script>
-    
+
     <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+
     <style>
         input[type="text"] {
             border-width: 1px;
@@ -49,10 +49,10 @@
             </h2>
 
             <div class="flex items-stretch flex-grow px-4 py-2">
-                <input id="search" type="text" name="search" 
-                       class="block w-full rounded-none rounded-l-md sm:text-sm border-gray-300" 
-                       placeholder="Search" 
-                       x-model="search" 
+                <input id="search" type="text" name="search"
+                       class="block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
+                       placeholder="Search"
+                       x-model="search"
                        @input="debouncedLoadItems()">
                 <button @click="clearSearch()">
                     <span class="sr-only">Clear</span>
@@ -70,12 +70,12 @@
 
                     <ul class="flex space-x-2 justify-center">
                         <li>
-                            <button @click="setPurchased(false)" 
+                            <button @click="setPurchased(false)"
                                     class="inline-block py-4 px-4 text-lg font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300"
                                     :class="{ 'border-blue-500 text-blue-600': !purchased }">Need</button>
                         </li>
                         <li>
-                            <button @click="setPurchased(true)" 
+                            <button @click="setPurchased(true)"
                                     class="inline-block py-4 px-4 text-lg font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300"
                                     :class="{ 'border-blue-500 text-blue-600': purchased }">Bought</button>
                         </li>
@@ -89,8 +89,8 @@
                             <!-- Item view mode -->
                             <div x-show="mode === 'view'" class="flex justify-between items-center space-x-2">
                                 <div class="flex justify-start space-x-3">
-                                    <button :class="item.purchased ? 'bg-green-600' : 'bg-gray-400'" 
-                                            class="px-2 py-2 rounded" 
+                                    <button :class="item.purchased ? 'bg-green-600' : 'bg-gray-400'"
+                                            class="px-2 py-2 rounded"
                                             @click="togglePurchased()">
                                         <span class="sr-only" x-text="item.purchased ? 'Mark as unpurchased' : 'Mark as purchased'"></span>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -156,22 +156,22 @@
 
                 <div class="py-2 px-4">
                     <label for="name" class="sr-only"></label>
-                    <input type="text" name="name" 
-                           class="block w-full rounded-none sm:text-sm border-gray-300" 
-                           placeholder="Item name..." 
+                    <input type="text" name="name"
+                           class="block w-full rounded-none sm:text-sm border-gray-300"
+                           placeholder="Item name..."
                            x-model="newItem.name" />
                     <div class="mt-1">
                         <label for="notes" class="sr-only"></label>
-                        <input type="text" name="notes" 
-                               class="block w-full rounded-none sm:text-sm border-gray-300" 
-                               placeholder="Notes (e.g., quantity, variety)..." 
+                        <input type="text" name="notes"
+                               class="block w-full rounded-none sm:text-sm border-gray-300"
+                               placeholder="Notes (e.g., quantity, variety)..."
                                x-model="newItem.notes" />
                     </div>
                     <div class="flex item-stretch flex-grow mt-1">
                         <label for="tag_list" class="sr-only"></label>
-                        <input type="text" name="tag_list" 
-                               class="block w-full rounded-none sm:text-sm border-gray-300" 
-                               placeholder="Tags..." 
+                        <input type="text" name="tag_list"
+                               class="block w-full rounded-none sm:text-sm border-gray-300"
+                               placeholder="Tags..."
                                x-model="newItem.tags" />
                         <button type="submit" class="-ml-px relative px-4 py-2 border border-blue-600 text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700" @click="addNewItem()">
                             Add
@@ -181,10 +181,10 @@
             </div>
         </div>
     </div>
-    
+
     <!-- PocketBase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.5/dist/pocketbase.umd.js"></script>
-    
+
     <!-- App scripts -->
     <script src="js/pocketbase.js"></script>
     <script src="js/app.js"></script>
