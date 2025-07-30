@@ -18,13 +18,13 @@ function groceryApp() {
 
         async loadItems() {
             this.loading = true;
-            
+
             // Check if user is authenticated
             if (!window.pb.authStore.isValid) {
                 window.location.href = 'auth.html';
                 return;
             }
-            
+
             try {
                 this.items = await window.groceryAPI.listItems(this.purchased, this.filterTag, this.search);
                 // Ensure tags is always a string
@@ -45,7 +45,7 @@ function groceryApp() {
             if (this.searchTimeout) {
                 clearTimeout(this.searchTimeout);
             }
-            
+
             // Set new timeout for 300ms delay
             this.searchTimeout = setTimeout(() => {
                 this.loadItems();
@@ -74,7 +74,7 @@ function groceryApp() {
 
         async addNewItem() {
             if (!this.newItem.name.trim()) return;
-            
+
             try {
                 await window.groceryAPI.createItem(this.newItem);
                 this.newItem = { name: '', tags: '', purchased: false, notes: '' };
@@ -83,7 +83,7 @@ function groceryApp() {
                 console.error('Error creating item:', error);
             }
         }
-    }
+    };
 }
 
 // Item component for each individual grocery item
@@ -128,7 +128,7 @@ function itemComponent(item) {
                 }
             }
         }
-    }
+    };
 }
 
 // Make functions globally available for Alpine.js

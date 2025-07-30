@@ -6,13 +6,13 @@ const listItems = async (purchased, tag, search) => {
   let filter = `purchased = ${purchased}`;
   if (tag) filter += ` && tags ~ '${tag}'`;
   if (search) filter += ` && (tags ~ '${search}' || name ~ '${search}')`;
-  
-  const results = await pb.collection('groceries_items').getFullList({ 
-    filter, 
-    expand: 'purchases', 
-    fields: '*,purchases.created_at' 
+
+  const results = await pb.collection('groceries_items').getFullList({
+    filter,
+    expand: 'purchases',
+    fields: '*,purchases.created_at'
   });
-  
+
   return results.map((item) => {
     if (item.expand?.purchases) {
       const recentPurchases = item.expand.purchases.filter(purchase =>
