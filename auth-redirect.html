@@ -2,96 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Groceries - Auth Redirect</title>
-    
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'inter': ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Inter Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="font-inter">
-    <div x-data="authRedirect()" x-init="init()">
-        <div class="container mx-auto p-4">
-            <h1 class="text-2xl font-bold mb-4">Processing Authentication...</h1>
-            <p x-show="!error" class="text-gray-600">Completing OAuth flow...</p>
-            <div x-show="error" class="text-red-600" x-text="error"></div>
-        </div>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Processing Authentication...</h1>
+        <p id="status" class="text-gray-600">Completing OAuth flow...</p>
     </div>
     
-    <!-- PocketBase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.5/dist/pocketbase.umd.js"></script>
-    
-    <!-- App scripts -->
     <script src="js/pocketbase.js"></script>
-    <script src="js/auth.js"></script>
-    
     <script>
-        function authRedirect() {
-            return {
-                error: '',
-
-                async init() {
-                    const redirectUrl = window.location.origin + '/auth-redirect.html';
-                    const params = new URLSearchParams(window.location.search);
-                    
-                    try {
-                        // Get provider data from localStorage
-                        const providerData = localStorage.getItem('authState');
-                        if (!providerData) {
-                            throw new Error('No auth provider found in storage');
-                        }
-                        
-                        const provider = JSON.parse(providerData);
-                        
-                        const state = params.get('state');
-                        if (provider.state !== state) {
-                            throw new Error("State parameters don't match");
-                        }
-                        
-                        const code = params.get('code');
-                        if (!code) {
-                            throw new Error('No authorization code received');
-                        }
-                        
-                        const result = await window.groceryAPI.pb.collection('users').authWithOAuth2Code(
-                            provider.name,
-                            code,
-                            provider.codeVerifier,
-                            redirectUrl,
-                            { emailVisibility: false, nameVisibility: false }
-                        );
-                        
-                        // Redirect to main app
-                        window.location.href = 'index.html';
-                        
-                    } catch (err) {
-                        console.error('Auth redirect error:', err);
-                        this.error = "Failed to complete authentication: " + err.message;
-                    }
-                }
+        (async () => {
+            const status = document.getElementById('status');
+            const params = new URLSearchParams(window.location.search);
+            
+            try {
+                // Get provider data from localStorage
+                const providerData = localStorage.getItem('authState');
+                if (!providerData) throw new Error('No auth provider found in storage');
+                
+                const provider = JSON.parse(providerData);
+                const state = params.get('state');
+                const code = params.get('code');
+                
+                if (provider.state !== state) throw new Error("State parameters don't match");
+                if (!code) throw new Error('No authorization code received');
+                
+                await window.pb.collection('users').authWithOAuth2Code(
+                    provider.name,
+                    code,
+                    provider.codeVerifier,
+                    window.location.origin + '/auth-redirect.html',
+                    { emailVisibility: false, nameVisibility: false }
+                );
+                
+                // Redirect to main app
+                window.location.href = 'index.html';
+                
+            } catch (error) {
+                console.error('Auth redirect error:', error);
+                status.textContent = 'Authentication failed: ' + error.message;
+                status.className = 'text-red-600';
             }
-        }
-        
-        window.authRedirect = authRedirect;
+        })();
     </script>
 </body>
 </html>

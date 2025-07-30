@@ -2,95 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Groceries - Authentication</title>
-    
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'inter': ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Inter Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="font-inter">
-    <div x-data="authPage()" x-init="init()">
-        <div class="container mx-auto p-4">
-            <h1 class="text-2xl font-bold mb-4">Authenticating...</h1>
-            <p class="text-gray-600">Redirecting to Google OAuth...</p>
-        </div>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Authenticating...</h1>
+        <p id="status" class="text-gray-600">Redirecting to Google OAuth...</p>
     </div>
     
-    <!-- PocketBase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.5/dist/pocketbase.umd.js"></script>
-    
-    <!-- App scripts -->
-    <script src="js/pocketbase.js"></script>
-    <script src="js/auth.js"></script>
-    
     <script>
-        function authPage() {
-            return {
-                async init() {
-                    console.log('Auth page initializing...');
+        (async () => {
+            try {
+                const pb = new PocketBase('https://db.guymon.family');
+                const authMethods = await pb.collection('users').listAuthMethods();
+                const provider = authMethods.authProviders.find(p => p.name === 'google');
+                
+                if (provider) {
+                    localStorage.setItem('authState', JSON.stringify(provider));
                     const redirectUrl = window.location.origin + '/auth-redirect.html';
-                    
-                    try {
-                        // Wait for PocketBase to be ready
-                        let attempts = 0;
-                        while (!window.PocketBase || attempts < 50) {
-                            await new Promise(resolve => setTimeout(resolve, 100));
-                            attempts++;
-                        }
-                        
-                        // Create a fresh PocketBase instance for auth to avoid cancellation issues
-                        if (!window.PocketBase) {
-                            throw new Error('PocketBase not loaded properly');
-                        }
-                        
-                        const authPb = new PocketBase('https://db.guymon.family');
-                        const authMethods = await authPb.collection('users').listAuthMethods();
-                        const provider = authMethods.authProviders.find(p => p.name === 'google');
-                        
-                        if (provider) {
-                            // Store provider data in localStorage
-                            localStorage.setItem('authState', JSON.stringify(provider));
-                            
-                            // Properly encode the redirect URL and append it
-                            const encodedRedirectUrl = encodeURIComponent(redirectUrl);
-                            const authUrl = provider.authUrl + encodedRedirectUrl;
-                            
-                            // Redirect to Google OAuth
-                            window.location.href = authUrl;
-                        } else {
-                            console.error('Google auth provider not found');
-                            document.querySelector('p').textContent = 'Google auth provider not found';
-                        }
-                    } catch (error) {
-                        console.error('Auth initialization failed:', error);
-                        document.querySelector('p').textContent = 'Auth initialization failed: ' + error.message;
-                    }
+                    const authUrl = provider.authUrl + encodeURIComponent(redirectUrl);
+                    window.location.href = authUrl;
+                } else {
+                    document.getElementById('status').textContent = 'Google auth provider not found';
                 }
+            } catch (error) {
+                console.error('Auth error:', error);
+                document.getElementById('status').textContent = 'Authentication failed: ' + error.message;
             }
-        }
-        
-        window.authPage = authPage;
+        })();
     </script>
-    
-    <!-- Alpine.js - load after functions are defined -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
