@@ -33,7 +33,8 @@ This is an Alpine.js grocery shopping list application that has been converted f
 
 ### Key Implementation Details
 - **No Build Process**: Uses CDN for Alpine.js, Tailwind CSS, and PocketBase
-- **Global Script Pattern**: Functions exported to `window` object for Alpine.js compatibility
+- **Modular Architecture**: ES6 modules with dependency injection for better testing and maintainability
+- **Minimal Global Exposure**: Only Alpine.js component factories exposed globally
 - **Debounced Search**: 300ms delay prevents PocketBase auto-cancellation errors
 - **HTTP Server Required**: Google OAuth requires HTTP protocol, not file://
 

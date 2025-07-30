@@ -6,7 +6,7 @@ export class MockPocketBase {
     this.url = url;
     this.authStore = { isValid: true };
   }
-  
+
   collection(name) {
     return {
       getFullList: vi.fn(),

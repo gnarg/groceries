@@ -16,13 +16,13 @@ export function createGroceryApp(api) {
 
     async loadItems() {
       this.loading = true;
-      
+
       // Check if user is authenticated
       if (!api.authStore.isValid) {
         window.location.href = 'auth.html';
         return;
       }
-      
+
       try {
         this.items = await api.listItems(this.purchased, this.filterTag, this.search);
         // Ensure tags is always a string
@@ -43,7 +43,7 @@ export function createGroceryApp(api) {
       if (this.searchTimeout) {
         clearTimeout(this.searchTimeout);
       }
-      
+
       // Set new timeout for 300ms delay
       this.searchTimeout = setTimeout(() => {
         this.loadItems();
@@ -72,7 +72,7 @@ export function createGroceryApp(api) {
 
     async addNewItem() {
       if (!this.newItem.name.trim()) return;
-      
+
       try {
         await api.createItem(this.newItem);
         this.newItem = { name: '', tags: '', purchased: false, notes: '' };
