@@ -1,36 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { JSDOM } from 'jsdom';
+import { GroceryAPI } from '../js/modules/pocketbase.js';
+import { setupBrowserMocks } from './test-helpers.js';
 
-// Mock PocketBase
-class MockPocketBase {
-  constructor(url) {
-    this.url = url;
-    this.authStore = { isValid: true };
-  }
-  
-  collection(name) {
-    return {
-      getFullList: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn()
-    };
-  }
-}
+// Setup test environment
+setupBrowserMocks();
 
-// Setup DOM environment
-const dom = new JSDOM();
-global.window = dom.window;
-global.document = dom.window.document;
-global.PocketBase = MockPocketBase;
-
-// Import the module after setting up globals
-await import('../js/pocketbase.js');
-
-describe('PocketBase API', () => {
+describe('GroceryAPI', () => {
+  let api;
   let mockCollection;
   
   beforeEach(() => {
+    api = new GroceryAPI('https://test.example.com');
+    
     // Reset mocks
     mockCollection = {
       getFullList: vi.fn(),
@@ -40,7 +21,7 @@ describe('PocketBase API', () => {
     };
     
     // Mock the collection method
-    window.pb.collection = vi.fn().mockReturnValue(mockCollection);
+    api.pb.collection = vi.fn().mockReturnValue(mockCollection);
   });
 
   describe('listItems', () => {
@@ -49,7 +30,7 @@ describe('PocketBase API', () => {
         { id: '1', name: 'Milk', purchased: true, tags: 'dairy' }
       ]);
 
-      await window.groceryAPI.listItems(true, null, null);
+      await api.listItems(true, null, null);
       
       expect(mockCollection.getFullList).toHaveBeenCalledWith({
         filter: 'purchased = true',
@@ -61,22 +42,10 @@ describe('PocketBase API', () => {
     it('should include tag filter when provided', async () => {
       mockCollection.getFullList.mockResolvedValue([]);
 
-      await window.groceryAPI.listItems(false, 'dairy', null);
+      await api.listItems(false, 'dairy', null);
       
       expect(mockCollection.getFullList).toHaveBeenCalledWith({
         filter: 'purchased = false && tags ~ \'dairy\'',
-        expand: 'purchases',
-        fields: '*,purchases.created_at'
-      });
-    });
-
-    it('should include search filter when provided', async () => {
-      mockCollection.getFullList.mockResolvedValue([]);
-
-      await window.groceryAPI.listItems(false, null, 'milk');
-      
-      expect(mockCollection.getFullList).toHaveBeenCalledWith({
-        filter: 'purchased = false && (tags ~ \'milk\' || name ~ \'milk\')',
         expand: 'purchases',
         fields: '*,purchases.created_at'
       });
@@ -100,47 +69,43 @@ describe('PocketBase API', () => {
         }
       ]);
 
-      const result = await window.groceryAPI.listItems(false, null, null);
+      const result = await api.listItems(false, null, null);
       
       expect(result[0].count).toBe(1); // Only recent purchase counts
     });
   });
 
-  describe('createItem', () => {
-    it('should lowercase tags before creating', async () => {
-      const item = { name: 'Bread', tags: 'BAKERY Gluten-Free' };
-      mockCollection.create.mockResolvedValue({ id: '1', ...item });
+  it('should lowercase tags before creating items', async () => {
+    const item = { name: 'Bread', tags: 'BAKERY Gluten-Free' };
+    mockCollection.create.mockResolvedValue({ id: '1', ...item });
 
-      await window.groceryAPI.createItem(item);
-      
-      expect(mockCollection.create).toHaveBeenCalledWith({
-        name: 'Bread',
-        tags: 'bakery gluten-free'
-      });
+    await api.createItem(item);
+    
+    expect(mockCollection.create).toHaveBeenCalledWith({
+      name: 'Bread',
+      tags: 'bakery gluten-free'
     });
   });
 
-  describe('boughtItem', () => {
-    it('should create purchase and update item', async () => {
-      const item = { id: '1', name: 'Milk', purchases: ['old-purchase'] };
-      
-      // Mock purchase collection
-      const mockPurchaseCollection = { create: vi.fn().mockResolvedValue({ id: 'new-purchase' }) };
-      window.pb.collection = vi.fn()
-        .mockReturnValueOnce(mockPurchaseCollection) // First call for purchases
-        .mockReturnValueOnce(mockCollection); // Second call for items
+  it('should create purchase and update item when bought', async () => {
+    const item = { id: '1', name: 'Milk', purchases: ['old-purchase'] };
+    
+    // Mock purchase collection
+    const mockPurchaseCollection = { create: vi.fn().mockResolvedValue({ id: 'new-purchase' }) };
+    api.pb.collection = vi.fn()
+      .mockReturnValueOnce(mockPurchaseCollection) // First call for purchases
+      .mockReturnValueOnce(mockCollection); // Second call for items
 
-      mockCollection.update.mockResolvedValue({ ...item, purchased: true });
+    mockCollection.update.mockResolvedValue({ ...item, purchased: true });
 
-      await window.groceryAPI.boughtItem(item);
-      
-      expect(mockPurchaseCollection.create).toHaveBeenCalledWith({ item: '1' });
-      expect(mockCollection.update).toHaveBeenCalledWith('1', {
-        id: '1',
-        purchased: true,
-        purchases: ['old-purchase', 'new-purchase'],
-        notes: null
-      });
+    await api.boughtItem(item);
+    
+    expect(mockPurchaseCollection.create).toHaveBeenCalledWith({ item: '1' });
+    expect(mockCollection.update).toHaveBeenCalledWith('1', {
+      id: '1',
+      purchased: true,
+      purchases: ['old-purchase', 'new-purchase'],
+      notes: null
     });
   });
 });

@@ -27,8 +27,9 @@ This is an Alpine.js grocery shopping list application that has been converted f
 ### Application Structure
 - **Main App** (`index.html`): Contains Alpine.js grocery list component with search, filtering, and CRUD operations
 - **Auth Flow** (`auth.html` → `auth-redirect.html`): Google OAuth integration with PocketBase
-- **PocketBase Layer** (`js/pocketbase.js`): All database operations and business logic exposed to global scope
-- **Alpine Components** (`js/app.js`): `groceryApp()` and `itemComponent()` functions
+- **API Layer** (`js/modules/pocketbase.js`): GroceryAPI class with all database operations
+- **Components** (`js/modules/components.js`): Alpine.js component factories with dependency injection
+- **Entry Point** (`js/app.js`): Initializes API and exposes component factories to global scope
 
 ### Key Implementation Details
 - **No Build Process**: Uses CDN for Alpine.js, Tailwind CSS, and PocketBase

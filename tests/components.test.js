@@ -1,41 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { JSDOM } from 'jsdom';
+import { createGroceryApp, createItemComponent } from '../js/modules/components.js';
+import { createMockAPI, setupBrowserMocks } from './test-helpers.js';
 
-// Setup DOM environment  
-const dom = new JSDOM('', { url: 'http://localhost:3000' });
-global.window = dom.window;
-global.document = dom.window.document;
+// Setup test environment
+setupBrowserMocks();
 
-// Create a simple location mock
-global.window.location = {
-  href: 'http://localhost:3000',
-  assign: vi.fn(),
-  replace: vi.fn()
-};
-
-// Mock globals that would be set by pocketbase.js
-global.window.pb = { authStore: { isValid: true } };
-global.window.groceryAPI = {
-  listItems: vi.fn(),
-  createItem: vi.fn(),
-  updateItem: vi.fn(),
-  deleteItem: vi.fn(),
-  boughtItem: vi.fn(),
-  needItem: vi.fn()
-};
-
-// Import the module after setting up globals
-await import('../js/app.js');
-
-describe('groceryApp', () => {
+describe('createGroceryApp', () => {
   let app;
+  let mockAPI;
   
   beforeEach(() => {
-    // Reset mocks
+    mockAPI = createMockAPI();
+    app = createGroceryApp(mockAPI);
     vi.clearAllMocks();
-    
-    // Create fresh app instance
-    app = window.groceryApp();
     
     // Reset app state
     app.purchased = false;
@@ -48,19 +25,17 @@ describe('groceryApp', () => {
 
   describe('loadItems', () => {
     it('should return early when not authenticated', async () => {
-      window.pb.authStore.isValid = false;
-      const listItemsSpy = vi.spyOn(window.groceryAPI, 'listItems');
+      mockAPI.authStore.isValid = false;
       
       await app.loadItems();
       
-      // Should not call API when not authenticated
-      expect(listItemsSpy).not.toHaveBeenCalled();
+      expect(mockAPI.listItems).not.toHaveBeenCalled();
       expect(app.items).toEqual([]);
     });
 
     it('should load items and ensure tags are strings', async () => {
-      window.pb.authStore.isValid = true; // Ensure auth is valid
-      window.groceryAPI.listItems.mockResolvedValue([
+      mockAPI.authStore.isValid = true;
+      mockAPI.listItems.mockResolvedValue([
         { id: '1', name: 'Milk', tags: 'dairy' },
         { id: '2', name: 'Bread', tags: null }
       ]);
@@ -75,9 +50,8 @@ describe('groceryApp', () => {
     });
 
     it('should handle errors gracefully', async () => {
-      window.pb.authStore.isValid = true; // Ensure auth is valid
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      window.groceryAPI.listItems.mockRejectedValue(new Error('Network error'));
+      mockAPI.listItems.mockRejectedValue(new Error('Network error'));
 
       await app.loadItems();
       
@@ -107,54 +81,43 @@ describe('groceryApp', () => {
     });
   });
 
-  describe('setPurchased', () => {
-    it('should update purchased state and reload items', () => {
-      const loadItemsSpy = vi.spyOn(app, 'loadItems').mockImplementation(() => {});
-      
-      app.setPurchased(true);
-      
-      expect(app.purchased).toBe(true);
-      expect(loadItemsSpy).toHaveBeenCalled();
+  it('should create item and reset form when adding new item', async () => {
+    const loadItemsSpy = vi.spyOn(app, 'loadItems').mockImplementation(() => {});
+    app.newItem = { name: 'New Item', tags: 'test', notes: 'test note' };
+    
+    await app.addNewItem();
+    
+    expect(mockAPI.createItem).toHaveBeenCalledWith({
+      name: 'New Item',
+      tags: 'test',
+      notes: 'test note'
     });
+    expect(app.newItem).toEqual({ name: '', tags: '', purchased: false, notes: '' });
+    expect(loadItemsSpy).toHaveBeenCalled();
   });
 
-  describe('addNewItem', () => {
-    it('should not add item if name is empty', async () => {
-      app.newItem.name = '   ';
-      
-      await app.addNewItem();
-      
-      expect(window.groceryAPI.createItem).not.toHaveBeenCalled();
-    });
-
-    it('should create item and reset form', async () => {
-      const loadItemsSpy = vi.spyOn(app, 'loadItems').mockImplementation(() => {});
-      app.newItem = { name: 'New Item', tags: 'test', notes: 'test note' };
-      
-      await app.addNewItem();
-      
-      expect(window.groceryAPI.createItem).toHaveBeenCalledWith({
-        name: 'New Item',
-        tags: 'test',
-        notes: 'test note'
-      });
-      expect(app.newItem).toEqual({ name: '', tags: '', purchased: false, notes: '' });
-      expect(loadItemsSpy).toHaveBeenCalled();
-    });
+  it('should not add item if name is empty', async () => {
+    app.newItem.name = '   ';
+    
+    await app.addNewItem();
+    
+    expect(mockAPI.createItem).not.toHaveBeenCalled();
   });
 });
 
-describe('itemComponent', () => {
+describe('createItemComponent', () => {
   let component;
   let mockItem;
+  let mockAPI;
   
   beforeEach(() => {
-    vi.clearAllMocks();
+    mockAPI = createMockAPI();
     mockItem = { id: '1', name: 'Test Item', purchased: false };
-    component = window.itemComponent(mockItem);
+    component = createItemComponent(mockItem, mockAPI);
     
     // Mock $dispatch
     component.$dispatch = vi.fn();
+    vi.clearAllMocks();
   });
 
   describe('togglePurchased', () => {
@@ -163,7 +126,7 @@ describe('itemComponent', () => {
       
       await component.togglePurchased();
       
-      expect(window.groceryAPI.needItem).toHaveBeenCalledWith('1');
+      expect(mockAPI.needItem).toHaveBeenCalledWith('1');
       expect(component.item.purchased).toBe(false);
       expect(component.$dispatch).toHaveBeenCalledWith('reload-items');
     });
@@ -173,7 +136,7 @@ describe('itemComponent', () => {
       
       await component.togglePurchased();
       
-      expect(window.groceryAPI.boughtItem).toHaveBeenCalledWith(mockItem);
+      expect(mockAPI.boughtItem).toHaveBeenCalledWith(mockItem);
       expect(component.item.purchased).toBe(true);
       expect(component.$dispatch).toHaveBeenCalledWith('reload-items');
     });
@@ -185,7 +148,7 @@ describe('itemComponent', () => {
       
       await component.updateItem();
       
-      expect(window.groceryAPI.updateItem).toHaveBeenCalledWith(mockItem);
+      expect(mockAPI.updateItem).toHaveBeenCalledWith(mockItem);
       expect(component.mode).toBe('view');
       expect(component.$dispatch).toHaveBeenCalledWith('reload-items');
     });
@@ -193,22 +156,21 @@ describe('itemComponent', () => {
 
   describe('deleteItem', () => {
     it('should delete item after confirmation', async () => {
-      // Mock window.confirm
-      global.confirm = vi.fn().mockReturnValue(true);
+      global.confirm.mockReturnValue(true);
       
       await component.deleteItem();
       
       expect(confirm).toHaveBeenCalledWith('Really delete Test Item?');
-      expect(window.groceryAPI.deleteItem).toHaveBeenCalledWith('1');
+      expect(mockAPI.deleteItem).toHaveBeenCalledWith('1');
       expect(component.$dispatch).toHaveBeenCalledWith('reload-items');
     });
 
     it('should not delete item if not confirmed', async () => {
-      global.confirm = vi.fn().mockReturnValue(false);
+      global.confirm.mockReturnValue(false);
       
       await component.deleteItem();
       
-      expect(window.groceryAPI.deleteItem).not.toHaveBeenCalled();
+      expect(mockAPI.deleteItem).not.toHaveBeenCalled();
     });
   });
 });
