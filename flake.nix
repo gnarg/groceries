@@ -12,10 +12,11 @@
       in {
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
-            git
-            jujutsu
             nodejs_24
             claude-code
+            git
+            jujutsu
+            dos2unix
           ];
         };
       }
