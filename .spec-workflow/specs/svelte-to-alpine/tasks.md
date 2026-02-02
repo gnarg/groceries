@@ -63,7 +63,7 @@
   - _Requirements: 1, 3, 4, 5, 6_
   - _Prompt: Role: Backend Developer with PocketBase expertise | Task: Port src/lib/pocketbase.ts to src/pocketbase.ts, adding full TypeScript types to all function parameters and return values, importing types from src/types.ts | Restrictions: Do not change function logic, preserve all business rules (tag lowercasing, notes clearing on purchase, 30-day purchase count), maintain identical API | Success: All functions work identically to original, full type coverage, no any types_
 
-- [ ] 7. Create auth module
+- [x] 7. Create auth module
   - File: src/auth.ts
   - Implement checkAuth() function for route protection
   - Implement initOAuth() for auth page
