@@ -8,7 +8,7 @@ export default defineConfig({
 			input: {
 				main: resolve(__dirname, 'index.html'),
 				auth: resolve(__dirname, 'auth.html'),
-				'auth-redirect': resolve(__dirname, 'auth-redirect.html')
+				'auth/redirect': resolve(__dirname, 'auth/redirect.html')
 			}
 		}
 	},

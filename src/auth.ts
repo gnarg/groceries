@@ -7,10 +7,18 @@ const AUTH_STATE_KEY = 'authState';
  * Check if user is authenticated, redirect to auth page if not
  */
 export async function checkAuth(): Promise<boolean> {
+	// First check if we have a valid token in the store
+	if (!pb.authStore.isValid) {
+		return false;
+	}
+
+	// Try to refresh the token to ensure it's still valid on the server
 	try {
 		await pb.collection('users').authRefresh();
 		return pb.authStore.isValid;
 	} catch {
+		// Token refresh failed, clear the invalid token
+		pb.authStore.clear();
 		return false;
 	}
 }
@@ -48,7 +56,7 @@ export async function initOAuth(): Promise<void> {
 
 	setAuthState(provider);
 
-	const redirectUrl = window.location.origin + '/auth-redirect.html';
+	const redirectUrl = window.location.origin + '/auth/redirect';
 	window.location.href = provider.authUrl + redirectUrl;
 }
 
@@ -72,7 +80,7 @@ export async function handleCallback(): Promise<void> {
 		throw new Error('No authorization code received');
 	}
 
-	const redirectUrl = window.location.origin + '/auth-redirect.html';
+	const redirectUrl = window.location.origin + '/auth/redirect';
 
 	await pb.collection('users').authWithOAuth2Code(
 		provider.name,
