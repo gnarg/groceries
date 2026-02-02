@@ -10,7 +10,8 @@
       "mcp__spec-workflow__approvals",
       "Bash(npm install)",
       "Bash(npx tsc:*)",
-      "Bash(timeout 5 npm run dev:*)"
+      "Bash(timeout 5 npm run dev:*)",
+      "Bash(npm run test:*)"
     ]
   }
 }

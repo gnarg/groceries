@@ -105,7 +105,7 @@
   - _Requirements: 7.1, 7.2_
   - _Prompt: Role: Frontend Developer | Task: Create src/auth-init.ts that imports initOAuth from auth.ts and calls it on DOMContentLoaded | Restrictions: Keep minimal, single responsibility | Success: Auth page redirects to Google OAuth correctly_
 
-- [ ] 11. Create auth redirect page entry point
+- [x] 11. Create auth redirect page entry point
   - File: src/auth-redirect.ts
   - Import auth module
   - Call handleCallback() on page load
