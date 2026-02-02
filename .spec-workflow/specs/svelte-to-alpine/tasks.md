@@ -117,7 +117,7 @@
 
 ## Phase 4: HTML Templates
 
-- [ ] 12. Create main index.html
+- [x] 12. Create main index.html
   - File: index.html
   - Add doctype, head with meta tags, Tailwind CSS
   - Create main layout structure matching +layout.svelte
@@ -135,7 +135,7 @@
   - _Requirements: 1, 2, 3_
   - _Prompt: Role: Frontend Developer with Alpine.js and Tailwind CSS expertise | Task: Create index.html with full UI matching existing Svelte templates, using Alpine.js directives (x-data, x-model, x-show, x-for, @click) and preserving all Tailwind classes exactly | Restrictions: Match visual appearance exactly, preserve all SVG icons, maintain accessibility attributes | Success: UI looks identical to Svelte version, all interactions work_
 
-- [ ] 13. Create item template within index.html
+- [x] 13. Create item template within index.html
   - File: index.html (item row section)
   - Add template x-for with item iteration
   - Implement view mode: name, tags, notes, toggle button, edit button, delete button
@@ -147,7 +147,7 @@
   - _Requirements: 4, 5, 6_
   - _Prompt: Role: Frontend Developer with Alpine.js expertise | Task: Implement item row template within index.html using x-for, with view/edit mode toggle using nested x-data, preserving all Tailwind styling and SVG icons from Item.svelte | Restrictions: Match visual appearance exactly, handle tag click for filtering, confirm before delete | Success: Items display correctly, edit mode works, all buttons function_
 
-- [ ] 14. Create auth.html
+- [x] 14. Create auth.html
   - File: auth.html
   - Add minimal HTML structure
   - Display loading message during redirect
@@ -157,7 +157,7 @@
   - _Requirements: 7.1, 7.2_
   - _Prompt: Role: Frontend Developer | Task: Create auth.html with minimal structure showing "Redirecting to login..." message, including auth-init.js script | Restrictions: Keep minimal, auto-redirect behavior | Success: Page loads and redirects to Google OAuth_
 
-- [ ] 15. Create auth-redirect.html
+- [x] 15. Create auth-redirect.html
   - File: auth-redirect.html
   - Add HTML structure for callback handling
   - Display loading message during token exchange
@@ -170,7 +170,7 @@
 
 ## Phase 5: Testing
 
-- [ ] 16. Update test configuration
+- [x] 16. Update test configuration
   - File: vitest.config.ts (or vite.config.ts test section)
   - Configure for TypeScript tests
   - Set up jsdom environment
@@ -180,7 +180,7 @@
   - _Requirements: Testing NFR_
   - _Prompt: Role: QA Engineer with Vitest expertise | Task: Update Vitest configuration to work with TypeScript and jsdom without Svelte, configuring test environment for Alpine.js components | Restrictions: Keep existing test patterns where possible | Success: vitest runs without Svelte dependencies_
 
-- [ ] 17. Port PocketBase service tests
+- [x] 17. Port PocketBase service tests
   - File: tests/pocketbase.test.ts
   - Port existing tests from src/routes/Item.test.ts patterns
   - Test listItems, createItem, updateItem, deleteItem
