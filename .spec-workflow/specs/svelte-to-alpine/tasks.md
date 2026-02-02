@@ -211,7 +211,7 @@
   - _Requirements: 8.1_
   - _Prompt: Role: Developer | Task: Remove all Svelte-related files including src/routes/, src/lib/, svelte.config.js, and any .svelte files, keeping static assets and new src/*.ts files | Restrictions: Do not delete new Alpine.js files, preserve manifest.json and favicon | Success: No Svelte files remain, project builds successfully_
 
-- [ ] 20. Update static assets
+- [x] 20. Update static assets
   - Files: manifest.json, index.html meta tags
   - Verify PWA configuration
   - Update any paths if needed
