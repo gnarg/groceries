@@ -96,7 +96,7 @@
   - _Requirements: 1, 2, 3, 4, 5, 6_
   - _Prompt: Role: Frontend Developer with Alpine.js and TypeScript expertise | Task: Create src/app.ts with groceryApp() function implementing all state and methods from +page.svelte, using async/await for PocketBase calls, with full TypeScript types | Restrictions: Use explicit method calls instead of Svelte reactive statements, handle loading states properly, maintain identical functionality | Success: All features work: tab switching, search, filter, add, edit, delete, purchase toggle_
 
-- [ ] 10. Create auth page entry point
+- [x] 10. Create auth page entry point
   - File: src/auth-init.ts
   - Import auth module
   - Call initOAuth() on page load
