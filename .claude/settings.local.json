@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm ls:*)",
+      "WebSearch",
+      "WebFetch(domain:data-star.dev)",
+      "WebFetch(domain:github.com)",
+      "mcp__spec-workflow__spec-workflow-guide",
+      "Bash(tree:*)",
+      "mcp__spec-workflow__approvals"
+    ]
+  }
+}
