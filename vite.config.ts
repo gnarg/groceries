@@ -1,11 +1,19 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
 
 export default defineConfig({
-	plugins: [sveltekit()],
+	build: {
+		rollupOptions: {
+			input: {
+				main: resolve(__dirname, 'index.html'),
+				auth: resolve(__dirname, 'auth.html'),
+				'auth-redirect': resolve(__dirname, 'auth-redirect.html')
+			}
+		}
+	},
 	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}'],
+		include: ['tests/**/*.{test,spec}.{js,ts}'],
 		environment: 'jsdom',
-		setupFiles: ['./src/vitest-setup.ts']
+		setupFiles: ['./tests/vitest-setup.ts']
 	}
 });

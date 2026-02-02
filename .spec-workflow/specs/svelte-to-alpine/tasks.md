@@ -2,7 +2,7 @@
 
 ## Phase 1: Project Setup
 
-- [ ] 1. Update package.json and install dependencies
+- [x] 1. Update package.json and install dependencies
   - File: package.json
   - Remove SvelteKit dependencies (@sveltejs/kit, svelte, svelte-check, etc.)
   - Add Alpine.js and @types/alpinejs
