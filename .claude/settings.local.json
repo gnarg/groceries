@@ -8,7 +8,8 @@
       "mcp__spec-workflow__spec-workflow-guide",
       "Bash(tree:*)",
       "mcp__spec-workflow__approvals",
-      "Bash(npm install)"
+      "Bash(npm install)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
