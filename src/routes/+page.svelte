@@ -5,14 +5,20 @@
   let purchased = false;
   let filter_tag: string | null = null;
   let search: string | null = null;
+  let error: string | null = null;
 
   $: items = listItems(purchased, filter_tag, search);
 
   let new_item = { name: '', tags: '', purchased: false, notes: '' };
   const addNewItem = async () => {
-    const item = await createItem(new_item);
-    new_item = { name: '', tags: '', purchased: false, notes: '' };
-    items = listItems(purchased, filter_tag, search);
+    error = null;
+    try {
+      await createItem(new_item);
+      new_item = { name: '', tags: '', purchased: false, notes: '' };
+      items = listItems(purchased, filter_tag, search);
+    } catch (e: any) {
+      error = e.message || 'Failed to create item';
+    }
   }
 </script>
 
@@ -63,6 +69,9 @@
     </ul>
 
     <div class="py-2 px-4">
+      {#if error}
+        <div class="mb-2 p-2 text-sm text-red-700 bg-red-100 rounded">{error}</div>
+      {/if}
       <label for="name" class="sr-only" />
       <input type="text" name="name" class="block w-full rounded-none sm:text-sm border-gray-300" placeholder="Item name..." bind:value={new_item.name} />
       <div class="mt-1">
