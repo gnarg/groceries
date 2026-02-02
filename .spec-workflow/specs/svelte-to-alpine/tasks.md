@@ -76,7 +76,7 @@
 
 ## Phase 3: Alpine.js Application
 
-- [ ] 8. Create main Alpine.js entry point
+- [x] 8. Create main Alpine.js entry point
   - File: src/main.ts
   - Import Alpine and register groceryApp component
   - Initialize Alpine.js

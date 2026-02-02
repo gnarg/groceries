@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs';
 import { groceryApp } from './app';
+import './app.css';
 
 // Register the grocery app component
 Alpine.data('groceryApp', groceryApp);
