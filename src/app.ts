@@ -42,11 +42,15 @@ export function groceryApp(): GroceryAppState {
 
 		// Lifecycle
 		async init() {
+			console.log('[App] init called');
 			const isAuthenticated = await checkAuth();
+			console.log('[App] isAuthenticated:', isAuthenticated);
 			if (!isAuthenticated) {
+				console.log('[App] Not authenticated, redirecting to /auth.html');
 				window.location.href = '/auth.html';
 				return;
 			}
+			console.log('[App] Authenticated, loading items...');
 			await this.loadItems();
 		},
 
