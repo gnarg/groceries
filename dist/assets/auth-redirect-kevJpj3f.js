@@ -1,1 +1,0 @@
-import{h as a}from"./auth-By3jkay-.js";document.addEventListener("DOMContentLoaded",async()=>{const e=document.getElementById("error"),t=document.getElementById("loading");try{await a()}catch(n){const o=n instanceof Error?n.message:"Failed to complete login";t&&(t.style.display="none"),e&&(e.textContent=o,e.style.display="block")}});
