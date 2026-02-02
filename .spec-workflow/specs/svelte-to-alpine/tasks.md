@@ -203,7 +203,7 @@
 
 ## Phase 6: Cleanup
 
-- [ ] 19. Remove Svelte files
+- [x] 19. Remove Svelte files
   - Files: src/routes/**, src/lib/**, src/app.html, src/app.css (if moved), svelte.config.js
   - Delete all Svelte components and configuration
   - Keep static assets (favicon, manifest)
