@@ -13,7 +13,7 @@
   - _Requirements: 8.1, 8.2_
   - _Prompt: Role: DevOps Engineer specializing in Node.js project configuration | Task: Update package.json to remove all SvelteKit/Svelte dependencies and add Alpine.js with TypeScript support, keeping Vite, Vitest, Tailwind, and PocketBase | Restrictions: Do not remove testing or styling dependencies, preserve existing scripts where applicable, ensure all versions are compatible | Success: npm install runs without errors, no Svelte dependencies remain, Alpine.js and types are installed_
 
-- [ ] 2. Create Vite configuration for Alpine.js
+- [x] 2. Create Vite configuration for Alpine.js
   - File: vite.config.ts
   - Configure build to output dist/main.js
   - Set up multi-page entry points (main, auth, auth-redirect)
@@ -23,7 +23,7 @@
   - _Requirements: 8.2, 8.6_
   - _Prompt: Role: Build Engineer with Vite expertise | Task: Create vite.config.ts for Alpine.js with TypeScript, configuring multi-page build for index.html, auth.html, and auth-redirect.html with separate entry points | Restrictions: Keep configuration minimal, do not add unnecessary plugins, ensure dev server works with HTML files | Success: vite dev serves HTML files correctly, vite build produces bundled JS, TypeScript compiles without errors_
 
-- [ ] 3. Update TypeScript configuration
+- [x] 3. Update TypeScript configuration
   - File: tsconfig.json
   - Remove Svelte-specific settings
   - Configure for browser ES modules
