@@ -50,7 +50,7 @@ describe('groceryApp', () => {
 
 	describe('init', () => {
 		it('should redirect to auth if not authenticated', async () => {
-			vi.mocked(auth.checkAuth).mockResolvedValue(false);
+			vi.mocked(auth.checkAuth).mockReturnValue(false);
 
 			const app = groceryApp();
 			await app.init();
@@ -60,7 +60,7 @@ describe('groceryApp', () => {
 		});
 
 		it('should load items if authenticated', async () => {
-			vi.mocked(auth.checkAuth).mockResolvedValue(true);
+			vi.mocked(auth.checkAuth).mockReturnValue(true);
 			vi.mocked(pocketbase.listItems).mockResolvedValue([
 				{ id: '1', name: 'Milk', tags: 'dairy', purchased: false }
 			]);

@@ -4,32 +4,12 @@ import type { AuthProviderInfo } from './types';
 const AUTH_STATE_KEY = 'authState';
 
 /**
- * Check if user is authenticated, redirect to auth page if not
+ * Check if user is authenticated
  */
-export async function checkAuth(): Promise<boolean> {
-	console.log('[Auth] checkAuth called');
-	console.log('[Auth] localStorage pocketbase_auth:', localStorage.getItem('pocketbase_auth') ? 'exists' : 'empty');
-	console.log('[Auth] authStore.isValid:', pb.authStore.isValid);
-	console.log('[Auth] authStore.token:', pb.authStore.token ? 'exists' : 'empty');
-
-	// First check if we have a valid token in the store
-	if (!pb.authStore.isValid) {
-		console.log('[Auth] No valid token in store, returning false');
-		return false;
-	}
-
-	// Try to refresh the token to ensure it's still valid on the server
-	try {
-		console.log('[Auth] Attempting authRefresh...');
-		await pb.collection('users').authRefresh();
-		console.log('[Auth] authRefresh succeeded, isValid:', pb.authStore.isValid);
-		return pb.authStore.isValid;
-	} catch (e) {
-		// Token refresh failed, clear the invalid token
-		console.log('[Auth] authRefresh failed:', e);
-		pb.authStore.clear();
-		return false;
-	}
+export function checkAuth(): boolean {
+	// Simply check if we have a valid token in the store
+	// The token will be validated on the first actual API call
+	return pb.authStore.isValid;
 }
 
 /**
