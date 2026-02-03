@@ -43,7 +43,8 @@ describe('PocketBase Service', () => {
 			expect(mockGetFullList).toHaveBeenCalledWith({
 				filter: 'purchased = false',
 				expand: 'purchases',
-				fields: '*,purchases.created_at'
+				fields: '*,purchases.created_at',
+				requestKey: null
 			});
 			expect(result).toHaveLength(2);
 		});
@@ -59,7 +60,8 @@ describe('PocketBase Service', () => {
 			expect(mockGetFullList).toHaveBeenCalledWith({
 				filter: "purchased = false && tags ~ 'dairy'",
 				expand: 'purchases',
-				fields: '*,purchases.created_at'
+				fields: '*,purchases.created_at',
+				requestKey: null
 			});
 		});
 
@@ -74,7 +76,8 @@ describe('PocketBase Service', () => {
 			expect(mockGetFullList).toHaveBeenCalledWith({
 				filter: "purchased = true && (tags ~ 'milk' || name ~ 'milk')",
 				expand: 'purchases',
-				fields: '*,purchases.created_at'
+				fields: '*,purchases.created_at',
+				requestKey: null
 			});
 		});
 

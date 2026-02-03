@@ -19,7 +19,8 @@ export async function listItems(
 	const results = await pb.collection('groceries_items').getFullList({
 		filter,
 		expand: 'purchases',
-		fields: '*,purchases.created_at'
+		fields: '*,purchases.created_at',
+		requestKey: null // Disable auto-cancellation to prevent errors on concurrent loads
 	});
 
 	const items: ItemType[] = results.map((item) => {
