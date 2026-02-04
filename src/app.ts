@@ -87,8 +87,6 @@ export function groceryApp(): GroceryAppState {
 					await boughtItem(item);
 					item.purchased = true;
 				}
-				// Reload to update the list (item moves between tabs)
-				await this.loadItems();
 			} catch (e: unknown) {
 				this.error = e instanceof Error ? e.message : 'Failed to update item';
 			}
