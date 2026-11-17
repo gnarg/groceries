@@ -1,19 +1,31 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock the pocketbase module
+// Mock the pocketbase module. `pb` is included because app.ts's auth helpers
+// reach for pb.authStore when a call comes back 401.
 vi.mock('../src/pocketbase', () => ({
 	listItems: vi.fn(),
 	createItem: vi.fn(),
 	updateItem: vi.fn(),
 	deleteItem: vi.fn(),
 	boughtItem: vi.fn(),
-	needItem: vi.fn()
+	needItem: vi.fn(),
+	pb: {
+		authStore: {
+			clear: vi.fn(),
+			isValid: false,
+			token: ''
+		}
+	}
 }));
 
-// Mock the auth module
-vi.mock('../src/auth', () => ({
-	checkAuth: vi.fn()
-}));
+// Mock only checkAuth; isAuthError/requireLogin are exercised for real.
+vi.mock('../src/auth', async (importOriginal) => {
+	const actual = await importOriginal<typeof import('../src/auth')>();
+	return {
+		...actual,
+		checkAuth: vi.fn()
+	};
+});
 
 import { groceryApp } from '../src/app';
 import * as pocketbase from '../src/pocketbase';
@@ -50,7 +62,7 @@ describe('groceryApp', () => {
 
 	describe('init', () => {
 		it('should redirect to auth if not authenticated', async () => {
-			vi.mocked(auth.checkAuth).mockReturnValue(false);
+			vi.mocked(auth.checkAuth).mockResolvedValue(false);
 
 			const app = groceryApp();
 			await app.init();
@@ -59,8 +71,18 @@ describe('groceryApp', () => {
 			expect(window.location.href).toBe('/auth.html');
 		});
 
+		it('should redirect to auth and not load items when checkAuth rejects the session', async () => {
+			vi.mocked(auth.checkAuth).mockResolvedValue(false);
+
+			const app = groceryApp();
+			await app.init();
+
+			expect(pocketbase.listItems).not.toHaveBeenCalled();
+			expect(app.error).toBeNull();
+		});
+
 		it('should load items if authenticated', async () => {
-			vi.mocked(auth.checkAuth).mockReturnValue(true);
+			vi.mocked(auth.checkAuth).mockResolvedValue(true);
 			vi.mocked(pocketbase.listItems).mockResolvedValue([
 				{ id: '1', name: 'Milk', tags: 'dairy', purchased: false }
 			]);
@@ -71,6 +93,71 @@ describe('groceryApp', () => {
 			expect(auth.checkAuth).toHaveBeenCalled();
 			expect(pocketbase.listItems).toHaveBeenCalledWith(false, null, null);
 			expect(app.items).toHaveLength(1);
+		});
+	});
+
+	describe('stale session handling', () => {
+		// A token can be locally unexpired yet rejected by the server (rotated JWT
+		// secret, restored backup, recreated user). Those 401s must send the user
+		// back to login instead of stranding them on an error message.
+		const unauthorized = Object.assign(new Error('Missing or invalid authentication.'), {
+			status: 401
+		});
+
+		it('loadItems should redirect to login on 401 instead of showing the error', async () => {
+			vi.mocked(pocketbase.listItems).mockRejectedValue(unauthorized);
+
+			const app = groceryApp();
+			await app.loadItems();
+
+			expect(window.location.href).toBe('/auth.html');
+			expect(app.error).toBeNull();
+			expect(app.loading).toBe(false);
+		});
+
+		it('addItem should redirect to login on 401', async () => {
+			vi.mocked(pocketbase.createItem).mockRejectedValue(unauthorized);
+
+			const app = groceryApp();
+			app.newItem = { name: 'Test', tags: '', notes: '', purchased: false };
+
+			await app.addItem();
+
+			expect(window.location.href).toBe('/auth.html');
+			expect(app.error).toBeNull();
+		});
+
+		it('toggleBought should redirect to login on 401', async () => {
+			vi.mocked(pocketbase.boughtItem).mockRejectedValue(unauthorized);
+
+			const app = groceryApp();
+			await app.toggleBought({ id: '1', name: 'Milk', purchased: false });
+
+			expect(window.location.href).toBe('/auth.html');
+			expect(app.error).toBeNull();
+		});
+
+		it('saveItem should redirect to login on 401', async () => {
+			vi.mocked(pocketbase.updateItem).mockRejectedValue(unauthorized);
+
+			const app = groceryApp();
+			await app.saveItem({ id: '1', name: 'Test' });
+
+			expect(window.location.href).toBe('/auth.html');
+			expect(app.error).toBeNull();
+		});
+
+		it('should still surface non-auth errors as error messages', async () => {
+			const serverError = Object.assign(new Error('Something went wrong'), {
+				status: 500
+			});
+			vi.mocked(pocketbase.listItems).mockRejectedValue(serverError);
+
+			const app = groceryApp();
+			await app.loadItems();
+
+			expect(window.location.href).toBe('');
+			expect(app.error).toBe('Something went wrong');
 		});
 	});
 
