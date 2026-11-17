@@ -1,9 +1,10 @@
+import fontInter from 'tailwindcss-font-inter';
+
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./*.html', './src/**/*.{js,ts}'],
-  theme: {
-    extend: {},
-  },
-  plugins: [require('tailwindcss-font-inter')],
-}
-
+	content: ['./*.html', './src/**/*.{js,ts}'],
+	theme: {
+		extend: {}
+	},
+	plugins: [fontInter]
+};
