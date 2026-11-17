@@ -2,14 +2,56 @@ import { pb } from './pocketbase';
 import type { AuthProviderInfo } from './types';
 
 const AUTH_STATE_KEY = 'authState';
+const LOGIN_PATH = '/auth.html';
 
 /**
- * Check if user is authenticated
+ * True when an error means the server rejected our credentials (HTTP 401): the
+ * stored token is missing, expired, or no longer signed by a key the server
+ * accepts.
+ *
+ * Duck-typed instead of `instanceof ClientResponseError` so it also matches
+ * stubbed errors in tests and any future SDK error shape.
  */
-export function checkAuth(): boolean {
-	// Simply check if we have a valid token in the store
-	// The token will be validated on the first actual API call
-	return pb.authStore.isValid;
+export function isAuthError(e: unknown): boolean {
+	return typeof e === 'object' && e !== null && (e as { status?: unknown }).status === 401;
+}
+
+/**
+ * Drop the local session and send the user to the login page.
+ */
+export function requireLogin(): void {
+	pb.authStore.clear();
+	window.location.href = LOGIN_PATH;
+}
+
+/**
+ * Check that we hold a session the server still accepts.
+ *
+ * A purely local check (`authStore.isValid`) only decodes the stored token's
+ * expiry, so it also passes for tokens the server has since rejected -- a rotated
+ * JWT secret, a restored backup, or a deleted/recreated user record. That showed
+ * up as a "Missing or invalid authentication." error box with no way back to
+ * login, because nothing downstream cleared the dead token. The refresh round trip
+ * confirms validity server-side (and extends the session while it's at it).
+ */
+export async function checkAuth(): Promise<boolean> {
+	if (!pb.authStore.isValid) {
+		return false;
+	}
+
+	try {
+		await pb.collection('users').authRefresh();
+		return pb.authStore.isValid;
+	} catch (e: unknown) {
+		// Only a 401 proves the token is dead. Anything else (network blip,
+		// server hiccup) leaves the stored token alone so a transient outage
+		// doesn't log the user out.
+		if (isAuthError(e)) {
+			pb.authStore.clear();
+			return false;
+		}
+		return true;
+	}
 }
 
 /**
@@ -79,13 +121,11 @@ export async function handleCallback(): Promise<void> {
 	console.log('[Auth] Redirect URL:', redirectUrl);
 
 	console.log('[Auth] Calling authWithOAuth2Code...');
-	await pb.collection('users').authWithOAuth2Code(
-		provider.name,
-		code,
-		provider.codeVerifier,
-		redirectUrl,
-		{ emailVisibility: false }
-	);
+	await pb
+		.collection('users')
+		.authWithOAuth2Code(provider.name, code, provider.codeVerifier, redirectUrl, {
+			emailVisibility: false
+		});
 
 	console.log('[Auth] authWithOAuth2Code succeeded');
 	console.log('[Auth] authStore.isValid:', pb.authStore.isValid);

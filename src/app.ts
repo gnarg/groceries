@@ -1,13 +1,6 @@
 import type { ItemType, NewItemForm } from './types';
-import {
-	listItems,
-	createItem,
-	updateItem,
-	deleteItem,
-	boughtItem,
-	needItem
-} from './pocketbase';
-import { checkAuth } from './auth';
+import { listItems, createItem, updateItem, deleteItem, boughtItem, needItem } from './pocketbase';
+import { checkAuth, isAuthError, requireLogin } from './auth';
 
 export interface GroceryAppState {
 	items: ItemType[];
@@ -42,9 +35,10 @@ export function groceryApp(): GroceryAppState {
 
 		// Lifecycle
 		async init() {
-			// Check if we have a valid auth token
-			if (!checkAuth()) {
-				window.location.href = '/auth.html';
+			// Check for a session the server still accepts, not merely an
+			// unexpired local token.
+			if (!(await checkAuth())) {
+				requireLogin();
 				return;
 			}
 			await this.loadItems();
@@ -55,12 +49,12 @@ export function groceryApp(): GroceryAppState {
 			this.loading = true;
 			this.error = null;
 			try {
-				this.items = await listItems(
-					this.purchased,
-					this.filterTag,
-					this.search || null
-				);
+				this.items = await listItems(this.purchased, this.filterTag, this.search || null);
 			} catch (e: unknown) {
+				if (isAuthError(e)) {
+					requireLogin();
+					return;
+				}
 				this.error = e instanceof Error ? e.message : 'Failed to load items';
 			} finally {
 				this.loading = false;
@@ -74,6 +68,10 @@ export function groceryApp(): GroceryAppState {
 				this.newItem = { name: '', tags: '', notes: '', purchased: false };
 				await this.loadItems();
 			} catch (e: unknown) {
+				if (isAuthError(e)) {
+					requireLogin();
+					return;
+				}
 				this.error = e instanceof Error ? e.message : 'Failed to create item';
 			}
 		},
@@ -88,6 +86,10 @@ export function groceryApp(): GroceryAppState {
 					item.purchased = true;
 				}
 			} catch (e: unknown) {
+				if (isAuthError(e)) {
+					requireLogin();
+					return;
+				}
 				this.error = e instanceof Error ? e.message : 'Failed to update item';
 			}
 		},
@@ -96,13 +98,21 @@ export function groceryApp(): GroceryAppState {
 			try {
 				await updateItem(item);
 			} catch (e: unknown) {
+				if (isAuthError(e)) {
+					requireLogin();
+					return;
+				}
 				this.error = e instanceof Error ? e.message : 'Failed to save item';
 			}
 		},
 
 		removeItem(item: ItemType) {
 			if (confirm(`Really delete ${item.name}?`)) {
-				deleteItem(item.id!);
+				deleteItem(item.id!).catch((e: unknown) => {
+					if (isAuthError(e)) {
+						requireLogin();
+					}
+				});
 				this.items = this.items.filter((i) => i.id !== item.id);
 			}
 		},

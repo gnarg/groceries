@@ -2,3 +2,15 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Nix
+flake.lock
+
+# Tool-generated (spec-workflow / agent settings)
+.spec-workflow/
+.claude/
+
+# Build output
+dist/
+build/
+node_modules/

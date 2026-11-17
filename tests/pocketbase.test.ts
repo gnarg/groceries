@@ -20,6 +20,19 @@ import {
 	pb
 } from '../src/pocketbase';
 
+type Collection = ReturnType<typeof pb.collection>;
+
+/**
+ * Type-only cast for a partial `pb.collection(...)` stub listing just the methods
+ * a given test exercises. Pure on purpose: callers wire it up with
+ * `mockReturnValue` (or return it from a `mockImplementation` branch), so this
+ * must not touch the mock itself — doing so would clobber an implementation that
+ * is currently running.
+ */
+function stubCollection(impl: Partial<Collection>): Collection {
+	return impl as Collection;
+}
+
 describe('PocketBase Service', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -33,9 +46,7 @@ describe('PocketBase Service', () => {
 			];
 
 			const mockGetFullList = vi.fn().mockResolvedValue(mockItems);
-			vi.mocked(pb.collection).mockReturnValue({
-				getFullList: mockGetFullList
-			} as any);
+			vi.mocked(pb.collection).mockReturnValue(stubCollection({ getFullList: mockGetFullList }));
 
 			const result = await listItems(false, null, null);
 
@@ -51,9 +62,7 @@ describe('PocketBase Service', () => {
 
 		it('should add tag filter when provided', async () => {
 			const mockGetFullList = vi.fn().mockResolvedValue([]);
-			vi.mocked(pb.collection).mockReturnValue({
-				getFullList: mockGetFullList
-			} as any);
+			vi.mocked(pb.collection).mockReturnValue(stubCollection({ getFullList: mockGetFullList }));
 
 			await listItems(false, 'dairy', null);
 
@@ -67,9 +76,7 @@ describe('PocketBase Service', () => {
 
 		it('should add search filter when provided', async () => {
 			const mockGetFullList = vi.fn().mockResolvedValue([]);
-			vi.mocked(pb.collection).mockReturnValue({
-				getFullList: mockGetFullList
-			} as any);
+			vi.mocked(pb.collection).mockReturnValue(stubCollection({ getFullList: mockGetFullList }));
 
 			await listItems(true, null, 'milk');
 
@@ -95,19 +102,13 @@ describe('PocketBase Service', () => {
 					purchases: ['p1', 'p2', 'p3'],
 					notes: '',
 					expand: {
-						purchases: [
-							{ created: recentDate },
-							{ created: recentDate },
-							{ created: oldDate }
-						]
+						purchases: [{ created: recentDate }, { created: recentDate }, { created: oldDate }]
 					}
 				}
 			];
 
 			const mockGetFullList = vi.fn().mockResolvedValue(mockItems);
-			vi.mocked(pb.collection).mockReturnValue({
-				getFullList: mockGetFullList
-			} as any);
+			vi.mocked(pb.collection).mockReturnValue(stubCollection({ getFullList: mockGetFullList }));
 
 			const result = await listItems(false, null, null);
 
@@ -140,9 +141,7 @@ describe('PocketBase Service', () => {
 			];
 
 			const mockGetFullList = vi.fn().mockResolvedValue(mockItems);
-			vi.mocked(pb.collection).mockReturnValue({
-				getFullList: mockGetFullList
-			} as any);
+			vi.mocked(pb.collection).mockReturnValue(stubCollection({ getFullList: mockGetFullList }));
 
 			const result = await listItems(false, null, null);
 
@@ -161,9 +160,7 @@ describe('PocketBase Service', () => {
 				purchases: [],
 				notes: ''
 			});
-			vi.mocked(pb.collection).mockReturnValue({
-				create: mockCreate
-			} as any);
+			vi.mocked(pb.collection).mockReturnValue(stubCollection({ create: mockCreate }));
 
 			const result = await createItem({
 				name: 'New Item',
@@ -185,9 +182,7 @@ describe('PocketBase Service', () => {
 	describe('updateItem', () => {
 		it('should update item with lowercase tags', async () => {
 			const mockUpdate = vi.fn().mockResolvedValue({});
-			vi.mocked(pb.collection).mockReturnValue({
-				update: mockUpdate
-			} as any);
+			vi.mocked(pb.collection).mockReturnValue(stubCollection({ update: mockUpdate }));
 
 			await updateItem({
 				id: '123',
@@ -210,9 +205,7 @@ describe('PocketBase Service', () => {
 	describe('deleteItem', () => {
 		it('should delete item by id', async () => {
 			const mockDelete = vi.fn().mockResolvedValue({});
-			vi.mocked(pb.collection).mockReturnValue({
-				delete: mockDelete
-			} as any);
+			vi.mocked(pb.collection).mockReturnValue(stubCollection({ delete: mockDelete }));
 
 			await deleteItem('123');
 
@@ -224,9 +217,7 @@ describe('PocketBase Service', () => {
 	describe('needItem', () => {
 		it('should mark item as not purchased', async () => {
 			const mockUpdate = vi.fn().mockResolvedValue({});
-			vi.mocked(pb.collection).mockReturnValue({
-				update: mockUpdate
-			} as any);
+			vi.mocked(pb.collection).mockReturnValue(stubCollection({ update: mockUpdate }));
 
 			await needItem('123');
 
@@ -242,12 +233,11 @@ describe('PocketBase Service', () => {
 			const mockCreate = vi.fn().mockResolvedValue({ id: 'purchase-1' });
 			const mockUpdate = vi.fn().mockResolvedValue({});
 
-			vi.mocked(pb.collection).mockImplementation((name: string) => {
-				if (name === 'groceries_purchases') {
-					return { create: mockCreate } as any;
-				}
-				return { update: mockUpdate } as any;
-			});
+			vi.mocked(pb.collection).mockImplementation((name: string) =>
+				name === 'groceries_purchases'
+					? stubCollection({ create: mockCreate })
+					: stubCollection({ update: mockUpdate })
+			);
 
 			await boughtItem({
 				id: 'item-1',
@@ -268,12 +258,11 @@ describe('PocketBase Service', () => {
 			const mockCreate = vi.fn().mockResolvedValue({ id: 'purchase-1' });
 			const mockUpdate = vi.fn().mockResolvedValue({});
 
-			vi.mocked(pb.collection).mockImplementation((name: string) => {
-				if (name === 'groceries_purchases') {
-					return { create: mockCreate } as any;
-				}
-				return { update: mockUpdate } as any;
-			});
+			vi.mocked(pb.collection).mockImplementation((name: string) =>
+				name === 'groceries_purchases'
+					? stubCollection({ create: mockCreate })
+					: stubCollection({ update: mockUpdate })
+			);
 
 			await boughtItem({
 				id: 'item-1',
